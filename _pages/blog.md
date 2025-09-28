@@ -2,7 +2,7 @@
 layout: default
 permalink: /blog/
 title: blog
-nav: true
+nav: true  # Uncomment to add this page to the navbar
 nav_order: 1
 pagination:
   enabled: true
