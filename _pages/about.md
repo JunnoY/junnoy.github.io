@@ -2,7 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: MSc. in Advanced Computing at Imperial College London
+subtitle: MSc. student in Advanced Computing at Imperial College London
 
 profile:
   align: right
