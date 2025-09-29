@@ -35,4 +35,8 @@ announcements:
 [//]: # ()
 [//]: # (Link to your social media connections, too. This theme is set up to use [Font Awesome icons]&#40;https://fontawesome.com/&#41; and [Academicons]&#40;https://jpswalsh.github.io/academicons/&#41;, like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.)
 
-I am currently a MSc. student studying Advanced Computing at Imperial College London. 
+I am currently an MSc student in Advanced Computing at Imperial College London, where I also work on robotic projects in the Dyson Robotics Lab under the supervision of Professor Andrew Davison. My research interests lie in developing intelligent robotic systems that can autonomously assist humans in everyday tasks. In particular, I am fascinated by robot teleoperation, reinforcement learning, imitation learning, and the intersection of these fields.
+
+Previously, I completed my BSc in Computer Science (Artificial Intelligence) at the University of Manchester, where I built a strong foundation in machine learning, computer vision, and robotics. Alongside my studies, I have engaged in hands-on projects that bridge theory and practice, from real-time robot teleoperation systems to applied machine learning solutions for healthcare and industry.
+
+Looking forward, I am motivated to contribute to research and engineering that bring robots closer to human environments, enabling them to collaborate, learn, and adapt in ways that improve daily life
