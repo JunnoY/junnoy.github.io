@@ -61,6 +61,11 @@ ninja.data = [{
           description: "another project with an image 🎉",
           section: "Projects",handler: () => {
               window.location.href = "/projects/9_project/";
+            },},{id: "projects-real-time-vision-based-hand-tracking-for-robot-teleoperation-and-learning",
+          title: 'Real-Time Vision-Based Hand Tracking for Robot Teleoperation and Learning',
+          description: "Imperial MSc. Robotics Project, supervised by Prof. Andrew Davison",
+          section: "Projects",handler: () => {
+              window.location.href = "/projects/IC_robot_teleoperation_project/";
             },},{
         id: 'social-email',
         title: 'email',
