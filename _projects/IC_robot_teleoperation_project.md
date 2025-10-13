@@ -1,8 +1,7 @@
 ---
 layout: page
 title: Real-Time Vision-Based Hand Tracking for Robot Teleoperation and Learning
-description: > 
-  Imperial MSc. Robotics Project, supervised by <a href="https://www.doc.ic.ac.uk/~ajd/" target="_blank">Prof. Andrew Davison</a>
+description: Imperial MSc. Robotics Project, supervised by <a href="https://www.doc.ic.ac.uk/~ajd/" target="_blank">Prof. Andrew Davison</a>
 img: assets/img/robot_teleoperate.png
 importance: 3
 category: work
@@ -215,7 +214,7 @@ The following steps are done in the motion retargeting pipeline:
 <p align="center">
   <img src="/assets/img/hand_triangle.png" alt="Hand Triangle" width="40%">
   <br>
-  <em class="figure-caption">*Illustration of the human hand gripper:*  
+  <em class="figure-caption">Illustration of the human hand gripper: 
   Green points represent $ \mathbf{p}_{thumb} $, $ \mathbf{p}_{index} $, and $ \mathbf{p}_{mid} $;  
   the red point represents $ \mathbf{p}_{gc} $.</em>
 </p>
