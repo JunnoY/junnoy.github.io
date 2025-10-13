@@ -196,8 +196,8 @@ The following steps are done in the motion retargeting pipeline:
 
 ##### Human Hand Position and Orientation
 - **Keypoints:** $\mathcal{M} = \{ M[0], \dots, M[20] \}$ — 21 3D hand keypoints from HaMeR.  
-- **Gripper Centre:** $\(p_\text{mid} = \frac{M[2] + M[5]}{2}, \quad p_\text{gc} = \frac{p_\text{mid} + M[4] + M[8]}{3}\)$.  
-- **Orientation Axes:** $\(\hat{x} = \frac{p_\text{index} - p_\text{thumb}}{\|p_\text{index} - p_\text{thumb}\|}, \quad \hat{z} = \frac{(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})}{\|(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})\|}, \quad \hat{y} = \frac{\hat{z} \times \hat{x}}{\|\hat{z} \times \hat{x}\|}\)$.
+- **Gripper Centre:** $p_\text{mid} = \frac{M[2] + M[5]}{2}, \quad p_\text{gc} = \frac{p_\text{mid} + M[4] + M[8]}{3}$.  
+- **Orientation Axes:** $\hat{x} = \frac{p_\text{index} - p_\text{thumb}}{\|p_\text{index} - p_\text{thumb}\|}, \quad \hat{z} = \frac{(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})}{\|(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})\|}, \quad \hat{y} = \frac{\hat{z} \times \hat{x}}{\|\hat{z} \times \hat{x}\|}$.
 
 <p align="center">
   <img src="/assets/img/hand_triangle.png" alt="Hand Triangle" width="40%">
