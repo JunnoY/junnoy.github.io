@@ -187,29 +187,15 @@ The figure below illustrates the hand tracking pipeline:
 The following steps are done in the motion retargeting pipeline:
 
 #### Human-to-Robot Cartesian Position and Orientation Transformation
-- **Purpose:**  
-  Map human hand movements to the robot’s two-finger gripper intuitively and stably.
+- **Purpose:** Map human hand movements to the robot’s two-finger gripper intuitively and stably.
 
-- **Concept:**  
-  The thumb corresponds to the left gripper finger, and the index finger (or closed four fingers) represents the right finger.  
+- **Concept:** The thumb corresponds to the left gripper finger, and the index finger (or closed four fingers) represents the right finger.  
   In this project, only the **thumb–index pair** is used for simplicity and stability.
 
 ##### Human Hand Position and Orientation
-- **Keypoints:**  
-  $ \mathcal{M} = \{ M[0], \dots, M[20] \} $ — 21 3D hand keypoints from HaMeR.
-
-- **Gripper Centre:**  
-  $$
-  p_\text{mid} = \frac{M[2] + M[5]}{2}, \quad
-  p_\text{gc} = \frac{p_\text{mid} + M[4] + M[8]}{3}
-  $$
-
-- **Orientation Axes:**  
-  $$
-  \hat{x} = \frac{p_\text{index} - p_\text{thumb}}{\|p_\text{index} - p_\text{thumb}\|}, \quad
-  \hat{z} = \frac{(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})}{\|(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})\|}, \quad
-  \hat{y} = \frac{\hat{z} \times \hat{x}}{\|\hat{z} \times \hat{x}\|}
-  $$
+- **Keypoints:** $\mathcal{M} = \{ M[0], \dots, M[20] \}$ — 21 3D hand keypoints from HaMeR.  
+- **Gripper Centre:** \(p_\text{mid} = \frac{M[2] + M[5]}{2}, \quad p_\text{gc} = \frac{p_\text{mid} + M[4] + M[8]}{3}\).  
+- **Orientation Axes:** \(\hat{x} = \frac{p_\text{index} - p_\text{thumb}}{\|p_\text{index} - p_\text{thumb}\|}, \quad \hat{z} = \frac{(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})}{\|(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})\|}, \quad \hat{y} = \frac{\hat{z} \times \hat{x}}{\|\hat{z} \times \hat{x}\|}\).
 
 <p align="center">
   <img src="/assets/img/hand_triangle.png" alt="Hand Triangle" width="40%">
@@ -225,33 +211,9 @@ The following steps are done in the motion retargeting pipeline:
 ---
 
 ##### Human-to-Robot Transformation
-- **Axis Mapping:**  
-  $$
-  \hat{x}_R = -\hat{z}_H, \quad
-  \hat{y}_R = \hat{x}_H, \quad
-  \hat{z}_R = -\hat{y}_H
-  $$
-  Matrix form:  
-  $$
-  A_{R \leftarrow H} =
-  \begin{bmatrix}
-  0 & 0 & -1 \\
-  1 & 0 & 0 \\
-  0 & -1 & 0
-  \end{bmatrix}
-  $$
-
-- **Position Mapping:**  
-  $$
-  p_R = A_{R \leftarrow H} \, p_H
-  $$
-  Maps relative displacements as  
-  $(z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)$.
-
-- **Orientation Mapping:**  
-  $$
-  R_R = A_{R \leftarrow H} \, R_H
-  $$
+- **Axis Mapping:** $\hat{x}_R = -\hat{z}_H, \quad \hat{y}_R = \hat{x}_H, \quad \hat{z}_R = -\hat{y}_H$. Matrix form: $A_{R \leftarrow H} = \begin{bmatrix} 0 & 0 & -1 \\ 1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}$.  
+- **Position Mapping:** $p_R = A_{R \leftarrow H} \, p_H$. Maps relative displacements as $(z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)$.  
+- **Orientation Mapping:** $R_R = A_{R \leftarrow H} \, R_H$.
 
 <p align="center">
   <img src="/assets/img/rotation_full.png" alt="Rotation Full" width="50%">
@@ -259,471 +221,108 @@ The following steps are done in the motion retargeting pipeline:
   <em class="figure-caption">Illustration of the human-to-robot position and orientation transformation.</em>
 </p>
 
----
-
 ##### End-Effector Position and Orientation
-- **Position Computation:**  
-  $$
-  \Delta p_t = p_t^{meas} - p_0, \quad
-  \widetilde{\Delta p}_t = \Pi_t \Delta p_t, \quad
-  \widehat{\Delta p}_t = \mathcal{K}[\widetilde{\Delta p}_t], \quad
-  \tilde{p}^{ee}_t = g(p_0 + \widehat{\Delta p}_t)
-  $$
-  Purity weighting and Kalman filtering smooth motion and suppress noise.
-
-- **Orientation Computation:**  
-  $$
-  R_\Delta = R_R \, R_0^\mathsf{T}
-  $$
-  Convert to Euler angles → unwrap → apply purity weighting and Kalman filter →  
-  convert to quaternion $ q^{ee}_t = \operatorname{Quat}_{xyz}(\widehat{\theta}_t) $.
-
-- **Notes:**  
-  - Angle unwrapping prevents discontinuities.  
-  - Kalman filtering ensures smooth motion.  
-  - Euler angles are intermediate; quaternions are used for IK.
-
----
+- **Position Computation:** $\Delta p_t = p_t^{meas} - p_0, \quad \widetilde{\Delta p}_t = \Pi_t \Delta p_t, \quad \widehat{\Delta p}_t = \mathcal{K}[\widetilde{\Delta p}_t], \quad \tilde{p}^{ee}_t = g(p_0 + \widehat{\Delta p}_t)$. Purity weighting and Kalman filtering smooth motion and suppress noise.  
+- **Orientation Computation:** $R_\Delta = R_R \, R_0^\mathsf{T}$. Convert to Euler angles → unwrap → apply purity weighting and Kalman filter → convert to quaternion $q^{ee}_t = \operatorname{Quat}_{xyz}(\widehat{\theta}_t)$.  
+- **Notes:** Angle unwrapping prevents discontinuities. Kalman filtering ensures smooth motion. Euler angles are intermediate; quaternions are used for IK.
 
 ##### Gripper State
-- **Definition:**  
-  $$
-  d_{grip} = \|p_{thumb} - p_{index}\|
-  $$
-  $$
-  S_{grip} =
-  \begin{cases}
-  \text{Closed}, & d_{grip} < 0.08 \text{ m} \\
-  \text{Open}, & d_{grip} > 0.10 \text{ m}
-  \end{cases}
-  $$
+- **Definition:** $d_{grip} = \|p_{thumb} - p_{index}\|$, $S_{grip} = \begin{cases} \text{Closed}, & d_{grip} < 0.08~\text{m} \\ \text{Open}, & d_{grip} > 0.10~\text{m} \end{cases}$.  
+- **Remarks:** The gripper state is determined from the thumb–index fingertip distance (in metres, camera frame).
 
-- **Remarks:**  
-  The gripper state is determined from the thumb–index fingertip distance (in metres, camera frame).
 
 #### Purity-Weighted Decoupling of Translation and Rotation
-- **Purpose:**  
-  Reduce unintended coupling between translation and rotation during hand-controlled robot teleoperation.
-
-- **Problem:**  
-  Human hand motion naturally links changes in position and orientation.  
-  When the user intends to rotate the hand, small translations often occur — and vice versa — causing non-intuitive robot EE motion.
-
-- **Solution:**  
-  Introduce a *motion purity mechanism* that computes translation–rotation purity scores at each time step and uses them as weights to decouple the two motion modes.
-
----
+- **Purpose:** Reduce unintended coupling between translation and rotation during hand-controlled robot teleoperation.  
+- **Problem:** Human hand motion naturally links position and orientation changes — when the user intends to rotate the hand, small translations often occur (and vice versa), leading to non-intuitive robot end-effector (EE) motion.  
+- **Solution:** Introduce a *motion-purity mechanism* that computes translation–rotation purity scores at each time step and uses them as weights to decouple the two motion modes.
 
 ##### Purity Metrics
-- **Translational and rotational magnitudes:**
-  $$
-  m_t^{trans} = \|\Delta \mathbf{p}_t\|_2, \qquad
-  m_t^{rot} = \|\Delta \boldsymbol{\theta}_t\|_2
-  $$
-  where  
-  - $ \Delta \mathbf{p}_t $: position increment  
-  - $ \Delta \boldsymbol{\theta}_t $: orientation increment (roll–pitch–yaw form)
-
----
+- **Translational and rotational magnitudes:** $m_t^{trans}=\|\Delta\mathbf{p}_t\|_2,\quad m_t^{rot}=\|\Delta\boldsymbol{\theta}_t\|_2$, where $\Delta\mathbf{p}_t$ is the position increment and $\Delta\boldsymbol{\theta}_t$ is the orientation increment (roll–pitch–yaw form).
 
 ##### Purity Scores
-- **Definition:**
-  $$
-  \pi_t^{trans} =
-  \frac{m_t^{trans}}{m_t^{trans} + m_t^{rot} + \epsilon}, \qquad
-  \pi_t^{rot} =
-  \frac{m_t^{rot}}{m_t^{trans} + m_t^{rot} + \epsilon}
-  $$
-  where $ \epsilon $ is a small constant to prevent division by zero.  
-  By design, $ \pi_t^{trans} + \pi_t^{rot} \approx 1 $.
-
----
+- **Definition:** $\pi_t^{trans}=\dfrac{m_t^{trans}}{m_t^{trans}+m_t^{rot}+\epsilon},\quad \pi_t^{rot}=\dfrac{m_t^{rot}}{m_t^{trans}+m_t^{rot}+\epsilon}$, where $\epsilon$ prevents division by zero and $\pi_t^{trans}+\pi_t^{rot}\approx1$.
 
 ##### Weighted Decoupling
-- **Mechanism:**
-  - If $ \pi_t^{rot} \ge 0.8 $ → translation increment $ \Delta \mathbf{p}_t $ is **suppressed**, indicating primarily rotational motion.  
-  - If $ \pi_t^{trans} $ dominates → rotational increment $ \Delta \boldsymbol{\theta}_t $ is **down-weighted** but not fully suppressed.
-
-- **Effect:**  
-  The purity weights act as dynamic filters, separating translation and rotation to reduce cross-contamination.
-
----
+- **Mechanism:** If $\pi_t^{rot}\ge0.8$, translation increment $\Delta\mathbf{p}_t$ is **suppressed**, indicating primarily rotational motion. If $\pi_t^{trans}$ dominates, the rotational increment $\Delta\boldsymbol{\theta}_t$ is **down-weighted** but not fully suppressed.  
+- **Effect:** Purity weights act as dynamic filters that separate translation and rotation, reducing cross-contamination.
 
 ##### Remarks
-- Enhances precision and intuitiveness in teleoperation.  
-- Prevents small hand jitters from causing mixed translation–rotation movements.  
-- Complements Kalman filtering for smooth control performance.
+Enhances precision and intuitiveness in teleoperation, prevents small hand jitters from mixing translation–rotation motions, and complements Kalman filtering for smooth control performance.
+
+---
 
 #### Kalman Filter for Smoothed Motion
-- **Purpose:**  
-  Apply Kalman filtering to smooth robot position and orientation changes, reducing noise from visual measurements.
-
-- **Background:**  
-  The **Kalman filter** (Rudolf E. Kalman, 1960) estimates unobservable states from noisy observations by combining predictions from a motion model with incoming sensor data.  
-  It is widely used in robot vision for fusing uncertain visual measurements over time, providing accurate and stable estimates of robot or target motion.
-
-- **Implementation:**  
-  This project uses a **constant-velocity Kalman filter**, applied separately to **translation** and **rotation**.  
-  The filter operates on *incremental changes* (not absolute poses), as relative dynamics are better captured by the constant-velocity assumption.
-
----
+- **Purpose:** Apply Kalman filtering to smooth robot position and orientation, reducing noise from visual measurements.  
+- **Background:** The **Kalman filter** (Kalman, 1960) estimates unobservable states from noisy observations by combining predictions from a motion model with new sensor data. It is widely used in robot vision to fuse uncertain visual inputs over time for accurate, stable motion estimates.  
+- **Implementation:** A **constant-velocity Kalman filter** is applied separately to translation and rotation, operating on *incremental changes* rather than absolute poses.
 
 ##### Kalman Filtering for Relative Motion
-- **Parameters:**  
-  The Kalman filter uses tunable covariance matrices:
-  - **P (State covariance):** confidence in current estimate — larger → rely more on new measurements.  
-  - **Q (Process noise):** uncertainty in motion model — larger → faster response but more noise.  
-  - **R (Measurement noise):** uncertainty in observations — larger → smoother but less responsive output.
-
-- **Purity weighting:**  
-  Translation and rotation are first decoupled via purity scores (Section *Purity-Weighted Decoupling*):  
-
-  $$
-  \widetilde{\Delta \mathbf{p}}_t =
-  \begin{bmatrix}
-  \widetilde{\Delta p}_x & \widetilde{\Delta p}_y & \widetilde{\Delta p}_z
-  \end{bmatrix}^\mathsf{T}, \quad
-  \widetilde{\Delta \boldsymbol{\theta}}_t =
-  \begin{bmatrix}
-  \widetilde{\Delta \phi} & \widetilde{\Delta \theta} & \widetilde{\Delta \psi}
-  \end{bmatrix}^\mathsf{T}
-  $$
-
----
+- **Parameters:** Covariance matrices: **P** (state covariance) controls trust in current estimate, **Q** (process noise) controls model uncertainty, and **R** (measurement noise) controls observation uncertainty. Larger **Q** → faster but noisier; larger **R** → smoother but slower.  
+- **Purity weighting:** Translation and rotation are first decoupled via purity scores: $\widetilde{\Delta\mathbf{p}}_t=[\widetilde{\Delta p}_x,\widetilde{\Delta p}_y,\widetilde{\Delta p}_z]^\mathsf{T},\ \widetilde{\Delta\boldsymbol{\theta}}_t=[\widetilde{\Delta\phi},\widetilde{\Delta\theta},\widetilde{\Delta\psi}]^\mathsf{T}$.
 
 ##### Prediction Step
-- **State vectors:**
-
-  $$
-  \mathbf{x}^p_t =
-  \begin{bmatrix}
-  \widetilde{\Delta p}_x & v_x & \widetilde{\Delta p}_y & v_y & \widetilde{\Delta p}_z & v_z
-  \end{bmatrix}^\mathsf{T}, \quad
-  \mathbf{x}^r_t =
-  \begin{bmatrix}
-  \widetilde{\Delta \phi} & \omega_\phi & \widetilde{\Delta \theta} & \omega_\theta & \widetilde{\Delta \psi} & \omega_\psi
-  \end{bmatrix}^\mathsf{T}
-  $$
-
-- **Constant-velocity model:**
-
-  $$
-  \hat{\mathbf{x}}_{t|t-1} = \mathbf{F}\,\hat{\mathbf{x}}_{t-1|t-1}, \qquad
-  \mathbf{P}_{t|t-1} = \mathbf{F}\,\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T} + \mathbf{Q}
-  $$
-
-  where  
-
-  $$
-  \mathbf{F}_{1D} =
-  \begin{bmatrix}
-  1 & \Delta t \\ 0 & 1
-  \end{bmatrix}, \quad \Delta t = 0.01~\text{s}
-  $$
-
----
+State vectors: $\mathbf{x}^p_t=[\widetilde{\Delta p}_x,v_x,\widetilde{\Delta p}_y,v_y,\widetilde{\Delta p}_z,v_z]^\mathsf{T}$ and $\mathbf{x}^r_t=[\widetilde{\Delta\phi},\omega_\phi,\widetilde{\Delta\theta},\omega_\theta,\widetilde{\Delta\psi},\omega_\psi]^\mathsf{T}$. Constant-velocity model: $\hat{\mathbf{x}}_{t|t-1}=\mathbf{F}\hat{\mathbf{x}}_{t-1|t-1},\ \mathbf{P}_{t|t-1}=\mathbf{F}\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T}+\mathbf{Q}$, where $\mathbf{F}_{1D}=\begin{bmatrix}1&\Delta t\\0&1\end{bmatrix},\ \Delta t=0.01\,\text{s}$.
 
 ##### Correction Step (Direct Perception Input)
-- **Measurement model:**
-
-  $$
-  \mathbf{z}_t = \mathbf{H}\mathbf{x}_t + \mathbf{v}_t, \quad \mathbf{v}_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R})
-  $$
-
-  where $ \mathbf{z}_t $ are perception-based increments from the vision pipeline.
-
-- **Correction update:**
-
-  $$
-  \hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} + \mathbf{K}_t\left(\mathbf{z}_t - \mathbf{H}\hat{\mathbf{x}}_{t|t-1}\right), \quad
-  \mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t\mathbf{H})\,\mathbf{P}_{t|t-1}
-  $$
-
----
+Measurement model: $\mathbf{z}_t=\mathbf{H}\mathbf{x}_t+\mathbf{v}_t,\ \mathbf{v}_t\!\sim\!\mathcal{N}(\mathbf{0},\mathbf{R})$, where $\mathbf{z}_t$ are increments from vision. Correction update: $\hat{\mathbf{x}}_{t|t}=\hat{\mathbf{x}}_{t|t-1}+\mathbf{K}_t(\mathbf{z}_t-\mathbf{H}\hat{\mathbf{x}}_{t|t-1}),\ \mathbf{P}_{t|t}=(\mathbf{I}-\mathbf{K}_t\mathbf{H})\mathbf{P}_{t|t-1}$.
 
 ##### Kalman Gain
-$$
-\mathbf{K}_t = \mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}
-\left(\mathbf{H}\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T} + \mathbf{R}\right)^{-1}
-$$
-
-- **Interpretation:**  
-  The Kalman gain $ \mathbf{K}_t $ adaptively balances:  
-  - the **motion model** (prediction), and  
-  - the **sensor measurements** (correction).  
-  It yields smooth yet responsive position and orientation estimates.
-
----
+$\mathbf{K}_t=\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}(\mathbf{H}\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}+\mathbf{R})^{-1}$. The Kalman gain adaptively balances prediction (motion model) and correction (sensor data), producing smooth, responsive position and orientation estimates.
 
 ##### Results
-- **Observation:**  
-  The filtered trajectories closely follow ground truth while removing high-frequency jitter from visual input.
+The filtered trajectories closely follow ground truth while removing high-frequency jitter from visual input.
 
-| ![Position Kalman filter](/assets/img/position_x_kf.png) ![Position Y](/assets/img/position_y_kf.png) ![Position Z](/assets/img/position_z_kf.png) |
-|:-------------------------------------------------------------------------------------------------------------------------------------------------:|
-| *Kalman filter smoothing of EE positions (X, Y, Z).* |
+<p align="center">
+  <img src="/assets/img/position_x_kf.png" alt="Position X" width="32%">
+  <img src="/assets/img/position_y_kf.png" alt="Position Y" width="32%">
+  <img src="/assets/img/position_z_kf.png" alt="Position Z" width="32%">
+  <br>
+  <em class="figure-caption">Kalman filter smoothing of EE positions (X, Y, Z).</em>
+</p>
 
-| ![Roll Kalman filter](/assets/img/roll_kf.png) ![Pitch Kalman filter](/assets/img/pitch_kf.png) ![Yaw Kalman filter](/assets/img/yaw_kf.png) |
-|:-------------------------------------------------------------------------------------------------------------------------------------------:|
-| *Kalman filter smoothing of EE orientation (Roll, Pitch, Yaw).* |
-
----
+<p align="center">
+  <img src="/assets/img/roll_kf.png" alt="Roll" width="32%">
+  <img src="/assets/img/pitch_kf.png" alt="Pitch" width="32%">
+  <img src="/assets/img/yaw_kf.png" alt="Yaw" width="32%">
+  <br>
+  <em class="figure-caption">Kalman filter smoothing of EE orientation (Roll, Pitch, Yaw).</em>
+</p>
 
 ##### Remarks
-- The filter efficiently reduces noise while maintaining responsiveness.  
-- Increasing **Q** makes the filter react faster but amplifies noise.  
-- Increasing **R** yields smoother motion but slower response.  
-- Ideal balance produces stable and natural robot movement.
+The filter reduces noise while maintaining responsiveness. Increasing **Q** speeds reaction but adds noise; increasing **R** smooths output but slows response. The tuned balance yields stable, natural robot motion.
+
+---
 
 #### Adaptive Motion Scaling Strategy
-- **Purpose:**  
-  Present the adaptive motion scaling strategy implemented for the **Interbotix VX300s** robot arm.  
-  The method integrates **orientation clamping** and a **dynamic hand-to-robot mapping algorithm** that scales end-effector (EE) positions for both precision and workspace coverage.  
-  While tailored to the VX300s, the approach generalises to other robot platforms.
-
----
+- **Purpose:** Present the adaptive motion-scaling strategy for the **Interbotix VX300s** robot arm. It integrates **orientation clamping** and a **dynamic hand-to-robot mapping algorithm** that scales end-effector (EE) positions for both precision and workspace coverage. Though tailored to the VX300s, the method generalises to other robot platforms.
 
 ##### Orientation Clamping
-
-- **Concept:**  
-  According to the Interbotix VX300s specifications, the EE has rotation limits:
-
-  $$
-  \text{roll} \in [-180^\circ,\, 180^\circ], \quad
-  \text{pitch} \in [-107^\circ,\, 130^\circ], \quad
-  \text{yaw} \in [-180^\circ,\, 180^\circ].
-  $$
-
-- **Problem:**  
-  When the human hand tilts near these bounds (e.g. upward pitch), the **IK solver** may produce abrupt changes in joint configuration, causing discontinuous and unsafe robot motion.
-
-- **Solution:**  
-  Apply **orientation clamping**:
-  - roll ∈ [−160°, +160°]  
-  - pitch, yaw ∈ [−85°, +85°]  
-  This prevents unsafe or discontinuous IK results while maintaining natural orientation fidelity.
-
-- **Effect:**  
-  Ensures continuous, stable, and safe control during teleoperation while preserving sufficient rotation for manipulation tasks.
-
----
+The EE rotation limits are $\text{roll}\!\in\![-180^\circ,180^\circ],\ \text{pitch}\!\in\![-107^\circ,130^\circ],\ \text{yaw}\!\in\![-180^\circ,180^\circ]$. Near these bounds (e.g. high pitch), the IK solver may produce abrupt joint changes. Orientation clamping restricts roll, pitch, yaw to [−160°, +160°], [−85°, +85°], [−85°, +85°], preventing unsafe discontinuities while maintaining natural fidelity.
 
 ##### Dynamic Hand-to-Robot Mapper
+Scales human hand displacements into robot EE positions with dynamic responsiveness — precise near the ground, faster when raised.
 
-- **Objective:**  
-  Scale human hand displacements into robot EE positions with dynamic responsiveness — precise near the ground, fast when elevated.
-
-- **Illustration:**  
-  The robot’s mapped motion along the X, Y, and Z axes is shown below.  
-  Configured parameters are summarised in *Appendix Dynamic Mapper Configuration*.
-
-| ![Mapping X](/assets/img/mapping_x.png) ![Mapping Y](/assets/img/mapping_y.png) ![Mapping Z](/assets/img/mapping_z.png) |
-|:----------------------------------------------------------------------------------------------------------------------:|
-| *Mapping human hand displacements to robot EE positions along the X, Y, and Z axes using the dynamic mapper.* |
-
----
+<p align="center">
+  <img src="/assets/img/mapping_x.png" alt="Mapping X" width="32%">
+  <img src="/assets/img/mapping_y.png" alt="Mapping Y" width="32%">
+  <img src="/assets/img/mapping_z.png" alt="Mapping Z" width="32%">
+  <br>
+  <em class="figure-caption">Mapping human hand displacements to robot EE positions along the X, Y, and Z axes.</em>
+</p>
 
 ##### Dynamic Hand-to-Robot Mapping Algorithm
-
-The mapping from the measured hand position $h_t$ to the commanded EE position $p_t$ proceeds through the following steps:
-
----
-
-###### Step 1: Smoothed Hand Motion Magnitude
-
-**Purpose:**  
-Estimate a smoothed motion magnitude $\tilde{m}_t$ to stabilise velocity estimation and suppress jitter.
-
-**Formula:**
-$$
-m_t = \|h_t - h_{t-1}\|, \qquad
-\tilde{m}_t = (1-\beta)\tilde{m}_{t-1} + \beta m_t
-$$
-
-**Parameter effect:**  
-- Small β → smoother but slower response  
-- Large β → more responsive but jittery
-
----
-
-###### Step 2: Height-Dependent Displacement Range
-
-**Purpose:**  
-Adapt displacement ranges with hand height for precise low-level control and freer motion when raised.
-
-**Formula:**
-$$
-z_{\text{cur}} = z_h + (h_{t,z} - h_{0,z})
-$$
-$$
-\tau_z^{\text{clamp}} = \min\!\Big(\max\!\big(\tfrac{z_{\text{cur}} - z_{\min}^R}{z_r - z_{\min}^R}, 0\big), 1\Big)
-$$
-$$
-\Delta x^H =
-\big[\text{lerp}(\Delta x_{\min}^-, \Delta x^-, \tau_z^{\text{clamp}}),
-     \text{lerp}(\Delta x_{\min}^+, \Delta x^+, \tau_z^{\text{clamp}})\big]
-$$
-$$
-\Delta y^H =
-\big[\text{lerp}(\Delta y_{\min}^-, \Delta y^-, \tau_z^{\text{clamp}}),
-     \text{lerp}(\Delta y_{\min}^+, \Delta y^+, \tau_z^{\text{clamp}})\big]
-$$
-$$
-\Delta z^H = [\Delta z^-, \Delta z^+]
-$$
-with $\text{lerp}(a,b,t) = (1-t)a + tb,\ t \in [0,1]$.
-
-**Parameter effect:**  
-- Smaller $(\Delta x_{\min}, \Delta y_{\min})$: high precision near ground  
-- Larger $(\Delta x_{\min}, \Delta y_{\min})$: faster but less stable  
-- Larger $z_r$: extended fine-control region  
-
----
-
-###### Step 3: Hand Displacement Clamping
-
-**Purpose:**  
-Clip raw hand displacements to safe workspace limits.
-
-**Formula:**
-$$
-\delta_x = \text{clip}(h_{t,x}-h_{0,x},\,\Delta x^H), \quad
-\delta_y = \text{clip}(h_{t,y}-h_{0,y},\,\Delta y^H), \quad
-\delta_z = \text{clip}(h_{t,z}-h_{0,z},\,\Delta z^H)
-$$
-with $\text{clip}(x,[a,b]) = \min(\max(x,a),b)$.
-
----
-
-###### Step 4: Base Axis Scaling
-
-**Purpose:**  
-Map hand displacements to robot motions using scaling factors $s_x, s_y, s_z$.
-
-**Formula:**
-$$
-d_x = s_x\,\delta_x, \quad
-d_y = s_y\,\delta_y, \quad
-d_z = s_z\,\delta_z
-$$
-
----
-
-###### Step 5: Height-Dependent Scaling Adjustment
-
-**Purpose:**  
-Increase scaling when the hand is raised above $z_r$, capped by maximum limits.
-
-**Formula:**
-$$
-\hat{s}_y = \min\!\big(s_y e^{(z_{\text{cur}}-z_r)},\, s_{y,\max}\big)
-$$
-$$
-\hat{s}_x = \min\!\big(s_x e^{(z_{\text{cur}}-z_r)},\, s_{xz,\max}\big)
-$$
-$$
-\hat{s}_z = \min\!\big(s_z e^{(z_{\text{cur}}-z_r)},\, s_{xz,\max}\big)
-$$
-
----
-
-###### Step 6: Pitch-Dependent Vertical Scaling
-
-**Purpose:**  
-Boost vertical response when the hand tilts downward.
-
-**Formula:**
-$$
-b_\theta =
-\begin{cases}
-\text{clip}\!\left(1 + k_\theta \tfrac{\theta - \theta_{\text{start}}}{50},\, 1,\, k_{\theta,\max}\right), & \theta > \theta_{\text{start}} \\
-1, & \text{otherwise}
-\end{cases}
-$$
-
----
-
-###### Step 7: Ground Slowdown Scaling
-
-**Purpose:**  
-Reduce vertical speed near the ground to prevent collisions.
-
-**Formula:**
-$$
-\sigma_z =
-\begin{cases}
-1 - \lambda_s \left(1 - \tfrac{z_{\text{cur}} - (z_s-\Delta z_s)}{\Delta z_s}\right), & z_{\text{cur}} < z_s \\
-1, & z_{\text{cur}} \ge z_s
-\end{cases}
-$$
-
----
-
-###### Step 8: Motion Thresholding
-
-**Purpose:**  
-Ignore tiny hand jitters and limit excessive motion.
-
-**Formula:**
-$$
-\hat{m}_t = \min(\max(\tilde{m}_t, m_{\min}), m_{\max})
-$$
-
----
-
-###### Step 9: Resistance Multiplier Computation
-
-**Purpose:**  
-Adjust resistance $\rho_t$ based on hand motion magnitude for fine vs. coarse control.
-
-**Formula:**
-$$
-\rho_t =
-\begin{cases}
-\rho_{\max}, & \hat{m}_t \le m_{\min} + \delta_\rho \\
-\rho_{\min}, & \hat{m}_t \ge m_{\max} - \delta_\rho \\
-\text{lerp}(\rho_{\max}, \rho_{\min}, \tfrac{\hat{m}_t - m_{\min}}{m_{\max}-m_{\min}}), & \text{otherwise}
-\end{cases}
-$$
-
----
-
-###### Step 10: Combined Scaling Application
-
-**Purpose:**  
-Combine all scaling, resistance, and slowdown factors into final robot displacements.
-
-**Formula:**
-$$
-r_x = \rho_t \hat{s}_x d_x, \quad
-r_y = \rho_t \hat{s}_y d_y, \quad
-r_z = \rho_t \hat{s}_z b_\theta \sigma_z d_z
-$$
-
----
-
-###### Step 11: Position Smoothing
-
-**Purpose:**  
-Stabilise final robot trajectory using exponential smoothing.
-
-**Formula:**
-$$
-\tilde{\mathbf{p}}_t^R = (1-\alpha)\tilde{\mathbf{p}}_{t-1}^R + \alpha \mathbf{p}_t^R
-$$
-
-**Effect:**  
-- Small α → smooth but lagging  
-- Large α → fast but noisy  
-
----
+The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:  
+1. **Smoothed Motion Magnitude:** $m_t=\|h_t-h_{t-1}\|,\ \tilde{m}_t=(1-\beta)\tilde{m}_{t-1}+\beta m_t$. Small β→smooth, large β→responsive.  
+2. **Height-Dependent Range:** $z_{\text{cur}}=z_h+(h_{t,z}-h_{0,z}),\ \tau_z^{\text{clamp}}=\min(\max(\tfrac{z_{\text{cur}}-z_{\min}^R}{z_r-z_{\min}^R},0),1)$, then interpolate $\Delta x^H,\Delta y^H,\Delta z^H$ using `lerp(a,b,t)=(1-t)a+tb`.  
+3. **Displacement Clamping:** $\delta_x=\text{clip}(h_{t,x}-h_{0,x},\Delta x^H),\ \delta_y=\text{clip}(h_{t,y}-h_{0,y},\Delta y^H),\ \delta_z=\text{clip}(h_{t,z}-h_{0,z},\Delta z^H)$ with `clip(x,[a,b])=min(max(x,a),b)`.  
+4. **Base Axis Scaling:** $d_x=s_x\delta_x,\ d_y=s_y\delta_y,\ d_z=s_z\delta_z$.  
+5. **Height-Dependent Scaling:** $\hat{s}_x=\min(s_x e^{(z_{\text{cur}}-z_r)},s_{xz,\max}),\ \hat{s}_y=\min(s_y e^{(z_{\text{cur}}-z_r)},s_{y,\max}),\ \hat{s}_z=\min(s_z e^{(z_{\text{cur}}-z_r)},s_{xz,\max})$.  
+6. **Pitch-Dependent Scaling:** $b_\theta=\text{clip}(1+k_\theta\tfrac{\theta-\theta_{\text{start}}}{50},1,k_{\theta,\max})$ for $\theta>\theta_{\text{start}}$.  
+7. **Ground Slowdown:** $\sigma_z=\begin{cases}1-\lambda_s(1-\tfrac{z_{\text{cur}}-(z_s-\Delta z_s)}{\Delta z_s}),&z_{\text{cur}}<z_s\\1,&z_{\text{cur}}\ge z_s\end{cases}$.  
+8. **Motion Thresholding:** $\hat{m}_t=\min(\max(\tilde{m}_t,m_{\min}),m_{\max})$.  
+9. **Resistance Multiplier:** $\rho_t=\begin{cases}\rho_{\max},&\hat{m}_t\le m_{\min}+\delta_\rho\\\rho_{\min},&\hat{m}_t\ge m_{\max}-\delta_\rho\\\text{lerp}(\rho_{\max},\rho_{\min},\tfrac{\hat{m}_t-m_{\min}}{m_{\max}-m_{\min}}),&\text{otherwise}\end{cases}$.  
+10. **Combined Scaling:** $r_x=\rho_t\hat{s}_x d_x,\ r_y=\rho_t\hat{s}_y d_y,\ r_z=\rho_t\hat{s}_z b_\theta\sigma_z d_z$.  
+11. **Position Smoothing:** $\tilde{\mathbf{p}}_t^R=(1-\alpha)\tilde{\mathbf{p}}_{t-1}^R+\alpha\mathbf{p}_t^R$, where small α→smooth/lag, large α→fast/noisy.
 
 ##### Summary
-The adaptive mapper continuously blends:
-- **Height-dependent scaling**  
-- **Pitch-aware amplification**  
-- **Ground slowdown**  
-- **Motion resistance and smoothing**
-
-to achieve **stable, intuitive, and safe teleoperation** across the robot’s full workspace.
-
+The adaptive mapper continuously blends height-dependent scaling, pitch-aware amplification, ground slowdown, and motion resistance smoothing to achieve stable, intuitive, and safe teleoperation across the robot’s workspace.
