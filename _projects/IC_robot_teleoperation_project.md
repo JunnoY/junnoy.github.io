@@ -181,6 +181,15 @@ The following steps are done in the motion retargeting pipeline:
   \hat{y} = \frac{\hat{z} \times \hat{x}}{\|\hat{z} \times \hat{x}\|}
   \]
 
+<p align="center">
+  <img src="/assets/img/hand_triangle.png" alt="Hand Triangle" width="40%">
+  <br>
+  <em class="figure-caption">*Illustration of the human hand gripper:*  
+Green points represent $\mathbf{p}_{\text{thumb}}$, $\mathbf{p}_{\text{index}}$, and $\mathbf{p}_{\text{mid}}$;  
+the red point represents $\mathbf{p}_{\text{gc}}$.</em>
+</p>
+
+
 - **Remarks:**  
   These form a right-handed coordinate frame representing the hand’s local orientation.
 
