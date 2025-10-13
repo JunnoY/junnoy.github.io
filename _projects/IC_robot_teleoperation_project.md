@@ -43,7 +43,7 @@ heading {
   letter-spacing: -0.02em;
   margin-top: 2.5em;
   margin-bottom: 0.6em;
-  color: #1a1a1a;
+  color: inherit; /* ← inherit from parent / theme */
 }
 
 /* --- Optional Page Title --- */
