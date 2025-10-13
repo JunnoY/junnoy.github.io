@@ -61,13 +61,14 @@ papertitle {
 }
 
 /* --- Captions --- */
-.caption {
+.figure-caption {
   font-family: 'Times New Roman', 'Source Serif Pro', serif;
   font-size: 15px;
   color: #666;
   text-align: center;
   margin-top: 0.5em;
 }
+
 
 /* --- Tables --- */
 table {
@@ -89,6 +90,18 @@ We implement a **real-time vision-based robot teleoperation framework** using ha
 
 ---
 
+<heading>System Design</heading>
+
+---
+
+<heading>Hand Tracking</heading>
+
+---
+
+<heading>Motion Retargeting</heading>
+
+---
+
 <heading>Teleoperation Tasks Demo</heading>
 
 <div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
@@ -99,7 +112,7 @@ We implement a **real-time vision-based robot teleoperation framework** using ha
   </iframe>
 </div>
 
-<div class="caption">
+<div class="figure-caption">
   Demonstration of teleoperation tasks performed with the physical VX300s robot arm by RGB-based hand tracking in real time.
 </div>
 
@@ -115,6 +128,6 @@ We implement a **real-time vision-based robot teleoperation framework** using ha
   </iframe>
 </div>
 
-<div class="caption">
+<div class="figure-caption">
   One-shot imitation learning demonstration showing the physical robot replicating the human-demonstrated task in 10 different scenes.
 </div>
