@@ -144,9 +144,9 @@ T和he figure below illustrates the hand tracking pipeline:
 </p>
 
 <p align="center">
-  <img src="/assets/img/hand_structure.png" alt="Hand Structure" width="80%">
+  <img src="/assets/img/hand_structure.png" alt="Hand Structure" width="30%">
   <br>
-  <em class="figure-caption">Fig. 2: Illustration of MANO hand skeleton model]{Illustration of the MANO hand skeleton model, with labelled joints. This project uses joints 2, 4, 5, and 8.</em>
+  <em class="figure-caption">Fig. 2: Illustration of the MANO hand skeleton model, with labelled joints. This project uses joints 2, 4, 5, and 8.</em>
 </p>
 
 
@@ -156,6 +156,18 @@ T和he figure below illustrates the hand tracking pipeline:
 ---
 
 <heading>Motion Retargeting</heading>
+The following steps are done in the motion retargeting pipeline:
+
+#### Human-to-Robot Cartesian Position and Orientation Transformation
+- Purpose:
+
+#### Purity-Weighted Decoupling of Translation and Rotation
+- Purpose:
+
+#### Kalman Filter For Smoothed Motion
+- Purpose:
+
+#### Adaptive Motion Scaling Strategy
 
 ---
 
