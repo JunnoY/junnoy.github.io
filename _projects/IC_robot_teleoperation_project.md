@@ -108,7 +108,7 @@ The overall workflow of the proposed **real-time robot teleoperation system** is
 <p align="center">
   <img src="/assets/img/project_framework.png" alt="System Framework" width="80%">
   <br>
-  <em>Project Framework.</em>
+  <em class="figure-caption">Project Framework</em>
 </p>
 
 The architecture consists of three main components:
@@ -120,10 +120,11 @@ The architecture consists of three main components:
 This design achieves an overall data transmission rate of 30 Hz, satisfying the requirements for real-time teleoperation.
 
 <p align="center">
-  <img src="/assets/img/multi_process_thread.png" alt="Multi-thread" width="80%">
+  <img src="/assets/img/multi_process_thread.png" alt="Multiprocessing and Multithreading Design" width="80%">
   <br>
-  <em>Multiprocessing and Multithreading in system design.</em>
+  <em class="figure-caption">Multiprocessing and multithreading in the system design</em>
 </p>
+
 ---
 
 <heading>Hand Tracking</heading>
