@@ -211,8 +211,10 @@ The following steps are done in the motion retargeting pipeline:
 ---
 
 ##### Human-to-Robot Transformation
-- **Axis Mapping:** $\hat{x}_R = -\hat{z}_H, \quad \hat{y}_R = \hat{x}_H, \quad \hat{z}_R = -\hat{y}_H$. Matrix form: $A_{R \leftarrow H} = \begin{bmatrix} 0 & 0 & -1 \\ 1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}$.  
-- **Position Mapping:** $p_R = A_{R \leftarrow H} \, p_H$. Maps relative displacements as $(z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)$.  
+- **Axis Mapping:** $\hat{x}_R = -\hat{z}_H, \quad \hat{y}_R = \hat{x}_H, \quad \hat{z}_R = -\hat{y}_H$. 
+  - Matrix form: $A_{R \leftarrow H} = \begin{bmatrix} 0 & 0 & -1 \\ 1 & 0 & 0 \\ 0 & -1 & 0 \end{bmatrix}$.  
+- **Position Mapping:** $p_R = A_{R \leftarrow H} \, p_H$. 
+  - Maps relative displacements as $(z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)$.  
 - **Orientation Mapping:** $R_R = A_{R \leftarrow H} \, R_H$.
 
 <p align="center">
@@ -222,8 +224,10 @@ The following steps are done in the motion retargeting pipeline:
 </p>
 
 ##### End-Effector Position and Orientation
-- **Position Computation:** $\Delta p_t = p_t^{meas} - p_0, \quad \widetilde{\Delta p}_t = \Pi_t \Delta p_t, \quad \widehat{\Delta p}_t = \mathcal{K}[\widetilde{\Delta p}_t], \quad \tilde{p}^{ee}_t = g(p_0 + \widehat{\Delta p}_t)$. Purity weighting and Kalman filtering smooth motion and suppress noise.  
-- **Orientation Computation:** $R_\Delta = R_R \, R_0^\mathsf{T}$. Convert to Euler angles → unwrap → apply purity weighting and Kalman filter → convert to quaternion $q^{ee}_t = \operatorname{Quat}_{xyz}(\widehat{\theta}_t)$.  
+- **Position Computation:** $\Delta p_t = p_t^{meas} - p_0, \quad \widetilde{\Delta p}_t = \Pi_t \Delta p_t, \quad \widehat{\Delta p}_t = \mathcal{K}[\widetilde{\Delta p}_t], \quad \tilde{p}^{ee}_t = g(p_0 + \widehat{\Delta p}_t)$. 
+  - Purity weighting and Kalman filtering smooth motion and suppress noise.  
+- **Orientation Computation:** $R_\Delta = R_R \, R_0^\mathsf{T}$. 
+  - Convert to Euler angles → unwrap → apply purity weighting and Kalman filter → convert to quaternion $q^{ee}_t = \operatorname{Quat}_{xyz}(\widehat{\theta}_t)$.  
 - **Notes:** Angle unwrapping prevents discontinuities. Kalman filtering ensures smooth motion. Euler angles are intermediate; quaternions are used for IK.
 
 ##### Gripper State
@@ -237,13 +241,18 @@ The following steps are done in the motion retargeting pipeline:
 - **Solution:** Introduce a *motion-purity mechanism* that computes translation–rotation purity scores at each time step and uses them as weights to decouple the two motion modes.
 
 ##### Purity Metrics
-- **Translational and rotational magnitudes:** $m_t^{trans}=\|\Delta\mathbf{p}_t\|_2,\quad m_t^{rot}=\|\Delta\boldsymbol{\theta}_t\|_2$, where $\Delta\mathbf{p}_t$ is the position increment and $\Delta\boldsymbol{\theta}_t$ is the orientation increment (roll–pitch–yaw form).
+- **Translational and rotational magnitudes:** $m_t^{trans}=\|\Delta\mathbf{p}_t\|_2,\quad m_t^{rot}=\|\Delta\boldsymbol{\theta}_t\|_2$
+- where 
+  - $\Delta\mathbf{p}_t$: position increment
+  - $\Delta\boldsymbol{\theta}_t$ : orientation increment (roll–pitch–yaw form)
 
 ##### Purity Scores
-- **Definition:** $\pi_t^{trans}=\dfrac{m_t^{trans}}{m_t^{trans}+m_t^{rot}+\epsilon},\quad \pi_t^{rot}=\dfrac{m_t^{rot}}{m_t^{trans}+m_t^{rot}+\epsilon}$, where $\epsilon$ prevents division by zero and $\pi_t^{trans}+\pi_t^{rot}\approx1$.
+- **Definition:** $\pi_t^{trans}=\dfrac{m_t^{trans}}{m_t^{trans}+m_t^{rot}+\epsilon},\quad \pi_t^{rot}=\dfrac{m_t^{rot}}{m_t^{trans}+m_t^{rot}+\epsilon}$
+- $\epsilon$ prevents division by zero and $\pi_t^{trans}+\pi_t^{rot}\approx1$
 
 ##### Weighted Decoupling
-- **Mechanism:** If $\pi_t^{rot}\ge0.8$, translation increment $\Delta\mathbf{p}_t$ is **suppressed**, indicating primarily rotational motion. If $\pi_t^{trans}$ dominates, the rotational increment $\Delta\boldsymbol{\theta}_t$ is **down-weighted** but not fully suppressed.  
+- **Mechanism:** If $\pi_t^{rot}\ge0.8$, translation increment $\Delta\mathbf{p}_t$ is **suppressed**, indicating primarily rotational motion. 
+  - If $\pi_t^{trans}$ dominates, the rotational increment $\Delta\boldsymbol{\theta}_t$ is **down-weighted** but not fully suppressed.  
 - **Effect:** Purity weights act as dynamic filters that separate translation and rotation, reducing cross-contamination.
 
 ##### Remarks
@@ -253,12 +262,18 @@ Enhances precision and intuitiveness in teleoperation, prevents small hand jitte
 
 #### Kalman Filter for Smoothed Motion
 - **Purpose:** Apply Kalman filtering to smooth robot position and orientation, reducing noise from visual measurements.  
-- **Background:** The **Kalman filter** (Kalman, 1960) estimates unobservable states from noisy observations by combining predictions from a motion model with new sensor data. It is widely used in robot vision to fuse uncertain visual inputs over time for accurate, stable motion estimates.  
+- **Background:** The **Kalman filter** (Kalman, 1960) estimates unobservable states from noisy observations by combining predictions from a motion model with new sensor data. 
+  - It is widely used in robot vision to fuse uncertain visual inputs over time for accurate, stable motion estimates.  
 - **Implementation:** A **constant-velocity Kalman filter** is applied separately to translation and rotation, operating on *incremental changes* rather than absolute poses.
 
 ##### Kalman Filtering for Relative Motion
-- **Parameters:** Covariance matrices: **P** (state covariance) controls trust in current estimate, **Q** (process noise) controls model uncertainty, and **R** (measurement noise) controls observation uncertainty. Larger **Q** → faster but noisier; larger **R** → smoother but slower.  
-- **Purity weighting:** Translation and rotation are first decoupled via purity scores: $\widetilde{\Delta\mathbf{p}}_t=[\widetilde{\Delta p}_x,\widetilde{\Delta p}_y,\widetilde{\Delta p}_z]^\mathsf{T},\ \widetilde{\Delta\boldsymbol{\theta}}_t=[\widetilde{\Delta\phi},\widetilde{\Delta\theta},\widetilde{\Delta\psi}]^\mathsf{T}$.
+- **Parameters:** Covariance matrices: 
+  - **P** (state covariance) controls trust in current estimate
+  - **Q** (process noise) controls model uncertainty
+  - **R** (measurement noise) controls observation uncertainty
+  - Larger **Q** → faster but noisier; larger **R** → smoother but slower
+- **Purity weighting:** Translation and rotation are first decoupled via purity scores: 
+  - $\widetilde{\Delta\mathbf{p}}_t=[\widetilde{\Delta p}_x,\widetilde{\Delta p}_y,\widetilde{\Delta p}_z]^\mathsf{T},\ \widetilde{\Delta\boldsymbol{\theta}}_t=[\widetilde{\Delta\phi},\widetilde{\Delta\theta},\widetilde{\Delta\psi}]^\mathsf{T}$.
 
 ##### Prediction Step
 State vectors: $\mathbf{x}^p_t=[\widetilde{\Delta p}_x,v_x,\widetilde{\Delta p}_y,v_y,\widetilde{\Delta p}_z,v_z]^\mathsf{T}$ and $\mathbf{x}^r_t=[\widetilde{\Delta\phi},\omega_\phi,\widetilde{\Delta\theta},\omega_\theta,\widetilde{\Delta\psi},\omega_\psi]^\mathsf{T}$. Constant-velocity model: $\hat{\mathbf{x}}_{t|t-1}=\mathbf{F}\hat{\mathbf{x}}_{t-1|t-1},\ \mathbf{P}_{t|t-1}=\mathbf{F}\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T}+\mathbf{Q}$, where $\mathbf{F}_{1D}=\begin{bmatrix}1&\Delta t\\0&1\end{bmatrix},\ \Delta t=0.01\,\text{s}$.
@@ -294,10 +309,14 @@ The filter reduces noise while maintaining responsiveness. Increasing **Q** spee
 ---
 
 #### Adaptive Motion Scaling Strategy
-- **Purpose:** Present the adaptive motion-scaling strategy for the **Interbotix VX300s** robot arm. It integrates **orientation clamping** and a **dynamic hand-to-robot mapping algorithm** that scales end-effector (EE) positions for both precision and workspace coverage. Though tailored to the VX300s, the method generalises to other robot platforms.
+- **Purpose:** Present the adaptive motion-scaling strategy for the **Interbotix VX300s** robot arm. 
+  - It integrates **orientation clamping** and a **dynamic hand-to-robot mapping algorithm** that scales end-effector (EE) positions for both precision and workspace coverage. 
+  - Though tailored to the VX300s, the method generalises to other robot platforms.
 
 ##### Orientation Clamping
-The EE rotation limits are $\text{roll}\!\in\![-180^\circ,180^\circ],\ \text{pitch}\!\in\![-107^\circ,130^\circ],\ \text{yaw}\!\in\![-180^\circ,180^\circ]$. Near these bounds (e.g. high pitch), the IK solver may produce abrupt joint changes. Orientation clamping restricts roll, pitch, yaw to [−160°, +160°], [−85°, +85°], [−85°, +85°], preventing unsafe discontinuities while maintaining natural fidelity.
+- The EE rotation limits are $\text{roll}\!\in\![-180^\circ,180^\circ],\ \text{pitch}\!\in\![-107^\circ,130^\circ],\ \text{yaw}\!\in\![-180^\circ,180^\circ]$. 
+- Near these bounds (e.g. high pitch), the IK solver may produce abrupt joint changes. 
+- Orientation clamping restricts roll, pitch, yaw to [−160°, +160°], [−85°, +85°], [−85°, +85°], preventing unsafe discontinuities while maintaining natural fidelity.
 
 ##### Dynamic Hand-to-Robot Mapper
 Scales human hand displacements into robot EE positions with dynamic responsiveness — precise near the ground, faster when raised.
