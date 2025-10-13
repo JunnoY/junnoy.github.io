@@ -8,43 +8,68 @@ category: work
 related_publications: false
 ---
 
-<style>
-/* --- Typography and Color Scheme --- */
-body, td, th, tr, p, a {
-  font-family: 'Lato', Verdana, Helvetica, sans-serif;
-  font-size: 14px;
-  color: inherit;   /* ← use theme-defined colour */
-}
-a { color: #1772d0; text-decoration: none; }
-a:hover { color: #f09228; }
+<!-- Import fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&family=Source+Serif+Pro:wght@400;600&display=swap" rel="stylesheet">
 
-/* --- Custom Headings --- */
+<style>
+/* --- Global Typography --- */
+body, p, td, th, tr {
+  font-family: 'Source Serif Pro', Georgia, 'Times New Roman', serif;
+  font-size: 18px;
+  line-height: 1.7;
+  color: #2b2b2b;
+}
+
+/* --- Links --- */
+a {
+  color: #1772d0;
+  text-decoration: none;
+}
+a:hover {
+  color: #f09228;
+}
+
+/* --- Section Headings (like “Method”) --- */
 heading {
   display: block;
-  font-size: 24px;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   font-weight: 700;
-  margin-top: 2em;
-  margin-bottom: 0.5em;
+  font-size: 36px;
+  letter-spacing: -0.02em;
+  margin-top: 2.5em;
+  margin-bottom: 0.6em;
+  color: #1a1a1a;
 }
-papertitle {
-  display: block;
-  font-size: 15px;
-  font-weight: 700;
-}
+
+/* --- Optional Page Title --- */
 name {
   display: block;
-  font-size: 32px;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 42px;
+  font-weight: 700;
   text-align: center;
   margin-bottom: 0.5em;
 }
 
+/* --- Paper-style Subtitles --- */
+papertitle {
+  display: block;
+  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 1.2em;
+}
+
+/* --- Captions --- */
 .caption {
-  font-size: 13px;
+  font-family: 'Source Serif Pro', serif;
+  font-size: 15px;
   color: #666;
   text-align: center;
   margin-top: 0.5em;
 }
 
+/* --- Tables --- */
 table {
   margin: 0 auto;
   border-collapse: collapse;
@@ -56,17 +81,15 @@ td {
 }
 </style>
 
-<name>Junle Yu (Imperial College London)</name>
-
 ---
 
 <heading>Project Overview</heading>
 
-We implement a **real-time vision-based robot teleoperation framework** using hand tracking and dynamic mapping.
+We implement a **real-time vision-based robot teleoperation framework** using hand tracking and dynamic mapping for intuitive control and data collection.
 
 ---
 
-<heading> Teleoperation Tasks Demo</heading>
+<heading>Teleoperation Tasks Demo</heading>
 
 <div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
   <iframe class="embed-responsive-item"
@@ -77,5 +100,21 @@ We implement a **real-time vision-based robot teleoperation framework** using ha
 </div>
 
 <div class="caption">
-  Demonstration of teleoperation tasks performed with the robot.
+  Demonstration of teleoperation tasks performed with the robot in real time.
+</div>
+
+---
+
+<heading>Robot Imitation Learning</heading>
+
+<div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
+  <iframe class="embed-responsive-item"
+          src="https://drive.google.com/file/d/1xn9Pt2lOfbbGdhPWujNqPAoEyKmrKA7e/preview"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+  </iframe>
+</div>
+
+<div class="caption">
+  Imitation learning demonstration showing robot reproducing hand-guided actions.
 </div>
