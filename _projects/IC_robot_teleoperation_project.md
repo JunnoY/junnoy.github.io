@@ -128,6 +128,30 @@ This design achieves an overall data transmission rate of 30 Hz, satisfying the 
 ---
 
 <heading>Hand Tracking</heading>
+T和he figure below illustrates the hand tracking pipeline:
+
+1. **Input Acquisition** — RGB frames are captured from the **RealSense** camera (depth information is not used).  
+2. **Image Enhancement** — Each frame undergoes **skin-tone guided correction**, **natural colour adjustment**, **contrast enhancement**, and **bilateral filtering** to normalise skin appearance and improve robustness for hand detection.  
+3. **2D Hand Detection** — The **MediaPipe** hand detector processes enhanced frames, localising **21 2D keypoints** per hand and producing cropped images with **handedness labels**.  
+4. **3D Hand Reconstruction** — Cropped hand images and bounding boxes are fed into the **HaMeR** model, which outputs **3D hand mesh vertices**, **camera parameters**, **3D joint keypoints** in the camera frame, and **2D projected keypoints**, as shown in Fig. 2.  
+5. **Coordinate Alignment** — The predicted 3D keypoints and camera parameters are used to compute hand joint coordinates aligned with **RealSense** measurements.  
+6. **Visualisation** — The reconstructed hand mesh is rendered in the RGB frame, displaying additional metrics such as the **thumb–index fingertip distance** and **camera proximity**.
+
+<p align="center">
+  <img src="/assets/img/hamer_pipeline.png" alt="Hamer Pipeline" width="80%">
+  <br>
+  <em class="figure-caption">Fig. 1: Hand Tracking Pipeline</em>
+</p>
+
+<p align="center">
+  <img src="/assets/img/hand_structure.png" alt="Hand Structure" width="80%">
+  <br>
+  <em class="figure-caption">Fig. 2: Illustration of MANO hand skeleton model]{Illustration of the MANO hand skeleton model, with labelled joints. This project uses joints 2, 4, 5, and 8.</em>
+</p>
+
+
+
+**Real-Time Multiprocessing** — **MediaPipe** and **HaMeR** run in separate processes to ensure **real-time performance** and low-latency execution.
 
 ---
 
