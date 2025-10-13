@@ -288,13 +288,59 @@ Enhances precision and intuitiveness in teleoperation, prevents small hand jitte
   - $\widetilde{\Delta\mathbf{p}}_t=[\widetilde{\Delta p}_x,\widetilde{\Delta p}_y,\widetilde{\Delta p}_z]^\mathsf{T},\ \widetilde{\Delta\boldsymbol{\theta}}_t=[\widetilde{\Delta\phi},\widetilde{\Delta\theta},\widetilde{\Delta\psi}]^\mathsf{T}$.
 
 ##### Prediction Step
-State vectors: $\mathbf{x}^p_t=[\widetilde{\Delta p}_x,v_x,\widetilde{\Delta p}_y,v_y,\widetilde{\Delta p}_z,v_z]^\mathsf{T}$ and $\mathbf{x}^r_t=[\widetilde{\Delta\phi},\omega_\phi,\widetilde{\Delta\theta},\omega_\theta,\widetilde{\Delta\psi},\omega_\psi]^\mathsf{T}$. Constant-velocity model: $\hat{\mathbf{x}}_{t|t-1}=\mathbf{F}\hat{\mathbf{x}}_{t-1|t-1},\ \mathbf{P}_{t|t-1}=\mathbf{F}\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T}+\mathbf{Q}$, where $\mathbf{F}_{1D}=\begin{bmatrix}1&\Delta t\\0&1\end{bmatrix},\ \Delta t=0.01\,\text{s}$.
+
+State vectors:  
+\[
+\mathbf{x}^p_t = [\widetilde{\Delta p}_x, v_x, \widetilde{\Delta p}_y, v_y, \widetilde{\Delta p}_z, v_z]^\mathsf{T}
+\]
+\[
+\mathbf{x}^r_t = [\widetilde{\Delta\phi}, \omega_\phi, \widetilde{\Delta\theta}, \omega_\theta, \widetilde{\Delta\psi}, \omega_\psi]^\mathsf{T}
+\]
+
+Constant-velocity model:  
+\[
+\hat{\mathbf{x}}_{t|t-1} = \mathbf{F}\hat{\mathbf{x}}_{t-1|t-1}, \quad
+\mathbf{P}_{t|t-1} = \mathbf{F}\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T} + \mathbf{Q}
+\]
+where  
+\[
+\mathbf{F}_{1D} =
+\begin{bmatrix}
+1 & \Delta t \\
+0 & 1
+\end{bmatrix}, \quad
+\Delta t = 0.01\,\text{s}.
+\]
+
+---
 
 ##### Correction Step (Direct Perception Input)
-Measurement model: $\mathbf{z}_t=\mathbf{H}\mathbf{x}_t+\mathbf{v}_t,\ \mathbf{v}_t\!\sim\!\mathcal{N}(\mathbf{0},\mathbf{R})$, where $\mathbf{z}_t$ are increments from vision. Correction update: $\hat{\mathbf{x}}_{t|t}=\hat{\mathbf{x}}_{t|t-1}+\mathbf{K}_t(\mathbf{z}_t-\mathbf{H}\hat{\mathbf{x}}_{t|t-1}),\ \mathbf{P}_{t|t}=(\mathbf{I}-\mathbf{K}_t\mathbf{H})\mathbf{P}_{t|t-1}$.
+
+Measurement model:  
+\[
+\mathbf{z}_t = \mathbf{H}\mathbf{x}_t + \mathbf{v}_t, \quad
+\mathbf{v}_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R})
+\]
+where $\mathbf{z}_t$ are increments from vision.
+
+Correction update:  
+\[
+\hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} +
+\mathbf{K}_t(\mathbf{z}_t - \mathbf{H}\hat{\mathbf{x}}_{t|t-1}), \quad
+\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t\mathbf{H})\mathbf{P}_{t|t-1}.
+\]
+
+---
 
 ##### Kalman Gain
-$\mathbf{K}_t=\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}(\mathbf{H}\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}+\mathbf{R})^{-1}$. The Kalman gain adaptively balances prediction (motion model) and correction (sensor data), producing smooth, responsive position and orientation estimates.
+
+\[
+\mathbf{K}_t =
+\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}
+(\mathbf{H}\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T} + \mathbf{R})^{-1}
+\]
+The Kalman gain adaptively balances prediction (motion model) and correction (sensor data),
+producing smooth, responsive position and orientation estimates.
 
 ##### Results
 The filtered trajectories closely follow ground truth while removing high-frequency jitter from visual input.
