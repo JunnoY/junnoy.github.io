@@ -34,7 +34,7 @@ heading {
   display: block;
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
   font-weight: 700;
-  font-size: 36px;
+  font-size: 24px;
   letter-spacing: -0.02em;
   margin-top: 2.5em;
   margin-bottom: 0.6em;
