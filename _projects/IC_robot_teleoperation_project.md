@@ -149,8 +149,6 @@ T和he figure below illustrates the hand tracking pipeline:
   <em class="figure-caption">Fig. 2: Illustration of the MANO hand skeleton model, with labelled joints. This project uses joints 2, 4, 5, and 8.</em>
 </p>
 
-
-
 **Real-Time Multiprocessing** — **MediaPipe** and **HaMeR** run in separate processes to ensure **real-time performance** and low-latency execution.
 
 ---
@@ -216,6 +214,12 @@ The following steps are done in the motion retargeting pipeline:
   \[
   R_R = A_{R \leftarrow H}\, R_H
   \]
+
+<p align="center">
+  <img src="/assets/img/rotation_full.png" alt="Rotation_Full" width="80%">
+  <br>
+  <em class="figure-caption">Illustration of the human-to-robot position and orientation transformation</em>
+</p>
 
 ---
 
