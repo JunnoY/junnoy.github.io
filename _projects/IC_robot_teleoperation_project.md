@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Real-Time Vision-Based Hand Tracking for Robot Teleoperation and Learning
-description: Imperial MSc. Robotics Project, supervised by <a href="https://www.doc.ic.ac.uk/~ajd/" target="_blank">Prof. Andrew Davison</a>
+description: "Imperial MSc. Robotics Project, supervised by <a href=\"https://www.doc.ic.ac.uk/~ajd/\" target=\"_blank\">Prof. Andrew Davison</a>"
 img: assets/img/robot_teleoperate.png
 importance: 3
 category: work
