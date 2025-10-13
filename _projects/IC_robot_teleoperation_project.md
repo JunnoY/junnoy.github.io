@@ -1,7 +1,8 @@
 ---
 layout: page
 title: Real-Time Vision-Based Hand Tracking for Robot Teleoperation and Learning
-description: Imperial MSc. Robotics Project, supervised by Prof. Andrew Davison
+description: > 
+  Imperial MSc. Robotics Project, supervised by <a href="https://www.doc.ic.ac.uk/~ajd/" target="_blank">Prof. Andrew Davison</a>
 img: assets/img/robot_teleoperate.png
 importance: 3
 category: work
@@ -444,8 +445,6 @@ $$
 - Increasing **Q** makes the filter react faster but amplifies noise.  
 - Increasing **R** yields smoother motion but slower response.  
 - Ideal balance produces stable and natural robot movement.
-
-
 
 #### Adaptive Motion Scaling Strategy
 
