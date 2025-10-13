@@ -90,13 +90,40 @@ td {
 ---
 
 <heading>Project Overview</heading>
+The rapid advancement of robotics and growing interest in embodied intelligence are bringing the vision of robots assisting humans in daily life closer to reality.
 
-We implement a **real-time vision-based robot teleoperation framework** using hand tracking and dynamic mapping for intuitive control and data collection.
+This project develops a real-time vision-based robot teleoperation framework that tracks human hand motions from RGB images and maps them to robot actions through a self-designed dynamic mapping mechanism. The system enables intuitive robot control and precise data collection, capturing both human hand keypoints and robot joint states.
+
+By using this dataset, we aim to train models that generate high-quality robot trajectories directly from hand keypoints, overcoming the limitations of current motion-retargeting methods and accelerating the development of scalable, data-driven learning of generalisable robot policies.
 
 ---
 
 <heading>System Design</heading>
+The overall workflow of the proposed **real-time robot teleoperation system** is as follows:
 
+1. **Hand Tracking** — Captures RGB images in real time and computes 3D hand keypoints using **MediaPipe** and **HaMeR**.  
+2. **Motion Retargeting** — Transforms hand keypoints from the **MANO frame** to the **Robot frame**, applies **Kalman filtering** for temporal smoothing, and performs **adaptive motion scaling** for natural control.  
+3. **Robot Manipulation & Visualization** — Executes the mapped motions on the **physical robot arm**, runs simulations in **Gazebo**, and renders visual feedback using **Rerun**.
+
+<p align="center">
+  <img src="/assets/img/project_framework.png" alt="System Framework" width="80%">
+  <br>
+  <em>Project Framework.</em>
+</p>
+
+The architecture consists of three main components:
+
+1. **Vision Processor** — Handles RGB frame analysis and hand keypoint extraction.  
+2. **Robot Controller** — Generates joint commands via a **dynamic hand-to-robot mapper** for smooth and precise control.  
+3. **Scale Tuning GUI** — Allows real-time adjustment of motion scaling for user-specific responsiveness.
+
+This design achieves an overall data transmission rate of 30 Hz, satisfying the requirements for real-time teleoperation.
+
+<p align="center">
+  <img src="/assets/img/multi_process_thread.png" alt="Multi-thread" width="80%">
+  <br>
+  <em>Multiprocessing and Multithreading in system design.</em>
+</p>
 ---
 
 <heading>Hand Tracking</heading>
