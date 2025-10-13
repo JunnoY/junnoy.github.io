@@ -128,7 +128,7 @@ This design achieves an overall data transmission rate of 30 Hz, satisfying the 
 ---
 
 <heading>Hand Tracking</heading>
-T和he figure below illustrates the hand tracking pipeline:
+The figure below illustrates the hand tracking pipeline:
 
 1. **Input Acquisition** — RGB frames are captured from the **RealSense** camera (depth information is not used).  
 2. **Image Enhancement** — Each frame undergoes **skin-tone guided correction**, **natural colour adjustment**, **contrast enhancement**, and **bilateral filtering** to normalise skin appearance and improve robustness for hand detection.  
