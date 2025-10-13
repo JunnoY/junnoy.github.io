@@ -66,7 +66,7 @@ We implement a **real-time vision-based robot teleoperation framework** using ha
 
 ---
 
-<heading>🎬 Teleoperation Tasks Demo</heading>
+<heading> Teleoperation Tasks Demo</heading>
 
 <div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
   <iframe class="embed-responsive-item"
