@@ -245,7 +245,16 @@ The following steps are done in the motion retargeting pipeline:
 - **Notes:** Angle unwrapping prevents discontinuities. Kalman filtering ensures smooth motion. Euler angles are intermediate; quaternions are used for IK.
 
 ##### Gripper State
-- **Definition:** $d_{grip} = \|p_{thumb} - p_{index}\|$, $S_{grip} = \begin{cases} \text{Closed}, & d_{grip} < 0.08~\text{m} \\ \text{Open}, & d_{grip} > 0.10~\text{m} \end{cases}$.  
+- **Definition:**
+  - $d_{grip} = \|p_{thumb} - p_{index}\|$
+    - \[
+        S_{\text{grip}} =
+        \begin{cases}
+        \text{Closed}, & d_{\text{grip}} < 0.08~\text{m}, \\[4pt]
+        \text{Open}, & d_{\text{grip}} > 0.10~\text{m}.
+        \end{cases}
+        \]
+
 - **Remarks:** The gripper state is determined from the thumb–index fingertip distance (in metres, camera frame).
 
 
