@@ -128,6 +128,8 @@ By using this dataset, we aim to train models that generate high-quality robot t
   One-shot imitation learning demonstration showing the physical robot replicating the human-demonstrated task in 10 different scenes.
 </div>
 
+---
+
 <heading>System Design</heading>
 The overall workflow of the proposed **real-time robot teleoperation system** is as follows:
 
