@@ -166,108 +166,107 @@ The following steps are done in the motion retargeting pipeline:
 
 ##### Human Hand Position and Orientation
 - **Keypoints:**  
-  \( \mathcal{M} = \{ M[0], \dots, M[20] \} \) — 21 3D hand keypoints from HaMeR.
+  $ \mathcal{M} = \{ M[0], \dots, M[20] \} $ — 21 3D hand keypoints from HaMeR.
 
 - **Gripper Centre:**  
-  \[
+  $$
   p_\text{mid} = \frac{M[2] + M[5]}{2}, \quad
   p_\text{gc} = \frac{p_\text{mid} + M[4] + M[8]}{3}
-  \]
+  $$
 
 - **Orientation Axes:**  
-  \[
+  $$
   \hat{x} = \frac{p_\text{index} - p_\text{thumb}}{\|p_\text{index} - p_\text{thumb}\|}, \quad
   \hat{z} = \frac{(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})}{\|(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})\|}, \quad
   \hat{y} = \frac{\hat{z} \times \hat{x}}{\|\hat{z} \times \hat{x}\|}
-  \]
+  $$
 
 <p align="center">
   <img src="/assets/img/hand_triangle.png" alt="Hand Triangle" width="40%">
   <br>
   <em class="figure-caption">*Illustration of the human hand gripper:*  
-Green points represent $\mathbf{p}_{\text{thumb}}$, $\mathbf{p}_{\text{index}}$, and $\mathbf{p}_{\text{mid}}$;  
-the red point represents $\mathbf{p}_{\text{gc}}$.</em>
+  Green points represent $ \mathbf{p}_{thumb} $, $ \mathbf{p}_{index} $, and $ \mathbf{p}_{mid} $;  
+  the red point represents $ \mathbf{p}_{gc} $.</em>
 </p>
 
-
 - **Remarks:**  
-  These form a right-handed coordinate frame representing the hand’s local orientation.
+  These vectors form a right-handed coordinate frame representing the hand’s local orientation.
 
 ---
 
 ##### Human-to-Robot Transformation
 - **Axis Mapping:**  
-  \[
-  \hat{x}_R = -\hat{z}_H,\;
-  \hat{y}_R = \hat{x}_H,\;
+  $$
+  \hat{x}_R = -\hat{z}_H, \quad
+  \hat{y}_R = \hat{x}_H, \quad
   \hat{z}_R = -\hat{y}_H
-  \]
+  $$
   Matrix form:  
-  \[
+  $$
   A_{R \leftarrow H} =
   \begin{bmatrix}
-  0 & 0 & -1\\
-  1 & 0 &  0\\
-  0 & -1 &  0
+  0 & 0 & -1 \\
+  1 & 0 & 0 \\
+  0 & -1 & 0
   \end{bmatrix}
-  \]
+  $$
 
 - **Position Mapping:**  
-  \[
-  p_R = A_{R \leftarrow H}\, p_H
-  \]
+  $$
+  p_R = A_{R \leftarrow H} \, p_H
+  $$
   Maps relative displacements as  
-  \((z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)\).
+  $(z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)$.
 
 - **Orientation Mapping:**  
-  \[
-  R_R = A_{R \leftarrow H}\, R_H
-  \]
+  $$
+  R_R = A_{R \leftarrow H} \, R_H
+  $$
 
 <p align="center">
-  <img src="/assets/img/rotation_full.png" alt="Rotation_Full" width="80%">
+  <img src="/assets/img/rotation_full.png" alt="Rotation Full" width="50%">
   <br>
-  <em class="figure-caption">Illustration of the human-to-robot position and orientation transformation</em>
+  <em class="figure-caption">Illustration of the human-to-robot position and orientation transformation.</em>
 </p>
 
 ---
 
 ##### End-Effector Position and Orientation
 - **Position Computation:**  
-  \[
-  \Delta p_t = p_t^{meas} - p_0,\quad
-  \widetilde{\Delta p}_t = \Pi_t \Delta p_t,\quad
-  \widehat{\Delta p}_t = \mathcal{K}[\widetilde{\Delta p}_t],\quad
+  $$
+  \Delta p_t = p_t^{meas} - p_0, \quad
+  \widetilde{\Delta p}_t = \Pi_t \Delta p_t, \quad
+  \widehat{\Delta p}_t = \mathcal{K}[\widetilde{\Delta p}_t], \quad
   \tilde{p}^{ee}_t = g(p_0 + \widehat{\Delta p}_t)
-  \]
+  $$
   Purity weighting and Kalman filtering smooth motion and suppress noise.
 
 - **Orientation Computation:**  
-  \[
-  R_\Delta = R_R\, R_0^\mathsf{T}
-  \]
+  $$
+  R_\Delta = R_R \, R_0^\mathsf{T}
+  $$
   Convert to Euler angles → unwrap → apply purity weighting and Kalman filter →  
-  convert to quaternion \( q^{ee}_t = \operatorname{Quat}_{xyz}(\widehat{\theta}_t) \).
+  convert to quaternion $ q^{ee}_t = \operatorname{Quat}_{xyz}(\widehat{\theta}_t) $.
 
 - **Notes:**  
   - Angle unwrapping prevents discontinuities.  
   - Kalman filtering ensures smooth motion.  
-  - Euler angles are intermediate; quaternions are used for IK.  
+  - Euler angles are intermediate; quaternions are used for IK.
 
 ---
 
 ##### Gripper State
 - **Definition:**  
-  \[
-  d_\text{grip} = \|p_\text{thumb} - p_\text{index}\|
-  \]
-  \[
-  S_\text{grip} =
+  $$
+  d_{grip} = \|p_{thumb} - p_{index}\|
+  $$
+  $$
+  S_{grip} =
   \begin{cases}
-  \text{Closed}, & d_\text{grip} < 0.08\text{ m}\\
-  \text{Open}, & d_\text{grip} > 0.10\text{ m}
+  \text{Closed}, & d_{grip} < 0.08 \text{ m} \\
+  \text{Open}, & d_{grip} > 0.10 \text{ m}
   \end{cases}
-  \]
+  $$
 
 - **Remarks:**  
   The gripper state is determined from the thumb–index fingertip distance (in metres, camera frame).
@@ -283,40 +282,47 @@ the red point represents $\mathbf{p}_{\text{gc}}$.</em>
 - **Solution:**  
   Introduce a *motion purity mechanism* that computes translation–rotation purity scores at each time step and uses them as weights to decouple the two motion modes.
 
+---
+
 ##### Purity Metrics
 - **Translational and rotational magnitudes:**
-  \[
-  m_t^{\text{trans}} = \|\Delta \mathbf{p}_t\|_2, \qquad
-  m_t^{\text{rot}} = \|\Delta \boldsymbol{\theta}_t\|_2
-  \]
+  $$
+  m_t^{trans} = \|\Delta \mathbf{p}_t\|_2, \qquad
+  m_t^{rot} = \|\Delta \boldsymbol{\theta}_t\|_2
+  $$
   where  
-  - \( \Delta \mathbf{p}_t \): position increment  
-  - \( \Delta \boldsymbol{\theta}_t \): orientation increment (roll–pitch–yaw form)
+  - $ \Delta \mathbf{p}_t $: position increment  
+  - $ \Delta \boldsymbol{\theta}_t $: orientation increment (roll–pitch–yaw form)
+
+---
 
 ##### Purity Scores
 - **Definition:**
-  \[
-  \pi_t^{\text{trans}} =
-  \frac{m_t^{\text{trans}}}{m_t^{\text{trans}} + m_t^{\text{rot}} + \epsilon}, \qquad
-  \pi_t^{\text{rot}} =
-  \frac{m_t^{\text{rot}}}{m_t^{\text{trans}} + m_t^{\text{rot}} + \epsilon}
-  \]
-  where \( \epsilon \) is a small constant to prevent division by zero.  
-  By design, \( \pi_t^{\text{trans}} + \pi_t^{\text{rot}} \approx 1 \).
+  $$
+  \pi_t^{trans} =
+  \frac{m_t^{trans}}{m_t^{trans} + m_t^{rot} + \epsilon}, \qquad
+  \pi_t^{rot} =
+  \frac{m_t^{rot}}{m_t^{trans} + m_t^{rot} + \epsilon}
+  $$
+  where $ \epsilon $ is a small constant to prevent division by zero.  
+  By design, $ \pi_t^{trans} + \pi_t^{rot} \approx 1 $.
+
+---
 
 ##### Weighted Decoupling
 - **Mechanism:**
-  - If \( \pi_t^{\text{rot}} \ge 0.8 \): translation increment \( \Delta \mathbf{p}_t \) is **suppressed**, indicating primarily rotational motion.  
-  - If \( \pi_t^{\text{trans}} \) dominates: rotational increment \( \Delta \boldsymbol{\theta}_t \) is **down-weighted** but not fully suppressed.
+  - If $ \pi_t^{rot} \ge 0.8 $ → translation increment $ \Delta \mathbf{p}_t $ is **suppressed**, indicating primarily rotational motion.  
+  - If $ \pi_t^{trans} $ dominates → rotational increment $ \Delta \boldsymbol{\theta}_t $ is **down-weighted** but not fully suppressed.
 
 - **Effect:**  
   The purity weights act as dynamic filters, separating translation and rotation to reduce cross-contamination.
+
+---
 
 ##### Remarks
 - Enhances precision and intuitiveness in teleoperation.  
 - Prevents small hand jitters from causing mixed translation–rotation movements.  
 - Complements Kalman filtering for smooth control performance.
-
 
 #### Kalman Filter for Smoothed Motion
 - **Purpose:**  
@@ -341,7 +347,8 @@ the red point represents $\mathbf{p}_{\text{gc}}$.</em>
 
 - **Purity weighting:**  
   Translation and rotation are first decoupled via purity scores (Section *Purity-Weighted Decoupling*):  
-  \[
+
+  $$
   \widetilde{\Delta \mathbf{p}}_t =
   \begin{bmatrix}
   \widetilde{\Delta p}_x & \widetilde{\Delta p}_y & \widetilde{\Delta p}_z
@@ -350,13 +357,14 @@ the red point represents $\mathbf{p}_{\text{gc}}$.</em>
   \begin{bmatrix}
   \widetilde{\Delta \phi} & \widetilde{\Delta \theta} & \widetilde{\Delta \psi}
   \end{bmatrix}^\mathsf{T}
-  \]
+  $$
 
 ---
 
 ##### Prediction Step
 - **State vectors:**
-  \[
+
+  $$
   \mathbf{x}^p_t =
   \begin{bmatrix}
   \widetilde{\Delta p}_x & v_x & \widetilde{\Delta p}_y & v_y & \widetilde{\Delta p}_z & v_z
@@ -365,46 +373,52 @@ the red point represents $\mathbf{p}_{\text{gc}}$.</em>
   \begin{bmatrix}
   \widetilde{\Delta \phi} & \omega_\phi & \widetilde{\Delta \theta} & \omega_\theta & \widetilde{\Delta \psi} & \omega_\psi
   \end{bmatrix}^\mathsf{T}
-  \]
+  $$
 
 - **Constant-velocity model:**
-  \[
+
+  $$
   \hat{\mathbf{x}}_{t|t-1} = \mathbf{F}\,\hat{\mathbf{x}}_{t-1|t-1}, \qquad
   \mathbf{P}_{t|t-1} = \mathbf{F}\,\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T} + \mathbf{Q}
-  \]
+  $$
+
   where  
-  \[
-  \mathbf{F}_\text{1D} =
+
+  $$
+  \mathbf{F}_{1D} =
   \begin{bmatrix}
   1 & \Delta t \\ 0 & 1
   \end{bmatrix}, \quad \Delta t = 0.01~\text{s}
-  \]
+  $$
 
 ---
 
 ##### Correction Step (Direct Perception Input)
 - **Measurement model:**
-  \[
+
+  $$
   \mathbf{z}_t = \mathbf{H}\mathbf{x}_t + \mathbf{v}_t, \quad \mathbf{v}_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R})
-  \]
-  where **zₜ** are perception-based increments from the vision pipeline.
+  $$
+
+  where $ \mathbf{z}_t $ are perception-based increments from the vision pipeline.
 
 - **Correction update:**
-  \[
+
+  $$
   \hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} + \mathbf{K}_t\left(\mathbf{z}_t - \mathbf{H}\hat{\mathbf{x}}_{t|t-1}\right), \quad
   \mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t\mathbf{H})\,\mathbf{P}_{t|t-1}
-  \]
+  $$
 
 ---
 
 ##### Kalman Gain
-\[
+$$
 \mathbf{K}_t = \mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}
 \left(\mathbf{H}\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T} + \mathbf{R}\right)^{-1}
-\]
+$$
 
 - **Interpretation:**  
-  The Kalman gain \( \mathbf{K}_t \) adaptively balances:
+  The Kalman gain $ \mathbf{K}_t $ adaptively balances:  
   - the **motion model** (prediction), and  
   - the **sensor measurements** (correction).  
   It yields smooth yet responsive position and orientation estimates.
@@ -423,7 +437,6 @@ the red point represents $\mathbf{p}_{\text{gc}}$.</em>
 |:-------------------------------------------------------------------------------------------------------------------------------------------:|
 | *Kalman filter smoothing of EE orientation (Roll, Pitch, Yaw).* |
 
-
 ---
 
 ##### Remarks
@@ -431,6 +444,7 @@ the red point represents $\mathbf{p}_{\text{gc}}$.</em>
 - Increasing **Q** makes the filter react faster but amplifies noise.  
 - Increasing **R** yields smoother motion but slower response.  
 - Ideal balance produces stable and natural robot movement.
+
 
 
 #### Adaptive Motion Scaling Strategy
