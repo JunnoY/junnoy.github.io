@@ -391,41 +391,158 @@ Scales human hand displacements into robot EE positions with dynamic responsiven
 </p>
 
 ##### Dynamic Hand-to-Robot Mapping Algorithm
-The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:  
+The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
 
-1. **Smoothed Motion Magnitude:** $m_t=\|h_t-h_{t-1}\|,\ \tilde{m}_t=(1-\beta)\tilde{m}_{t-1}+\beta m_t$. Small β→smooth, large β→responsive.  
-2. **Height-Dependent Range:** $z_{\text{cur}}=z_h+(h_{t,z}-h_{0,z}),\ \tau_z^{\text{clamp}}=\min(\max(\tfrac{z_{\text{cur}}-z_{\min}^R}{z_r-z_{\min}^R},0),1)$, then interpolate $\Delta x^H,\Delta y^H,\Delta z^H$ using $\text{lerp}(a,b,t)=(1-t)a+tb$.  
-3. **Displacement Clamping:** $\delta_x=\text{clip}(h_{t,x}-h_{0,x},\Delta x^H),\ \delta_y=\text{clip}(h_{t,y}-h_{0,y},\Delta y^H),\ \delta_z=\text{clip}(h_{t,z}-h_{0,z},\Delta z^H)$ with $\text{clip}(x,[a,b])=\min(\max(x,a),b)$.  
-4. **Base Axis Scaling:** $d_x=s_x\delta_x,\ d_y=s_y\delta_y,\ d_z=s_z\delta_z$.  
+1. **Smoothed Motion Magnitude:**
+
+   $$
+   m_t = \|h_t - h_{t-1}\|, \qquad 
+   \tilde{m}_t = (1 - \beta)\tilde{m}_{t-1} + \beta m_t.
+   $$
+   Small β → smooth, large β → responsive.
+
+---
+
+2. **Height-Dependent Range:**
+
+   $$
+   z_{\text{cur}} = z_h + (h_{t,z} - h_{0,z}),
+   $$
+
+   $$
+   \tau_z^{\text{clamp}} = 
+   \min\!\left(\max\!\left(
+   \frac{z_{\text{cur}} - z_{\min}^R}{z_r - z_{\min}^R}, 0\right), 1\right),
+   $$
+
+   interpolate $\Delta x^H, \Delta y^H, \Delta z^H$ using  
+
+   $$
+   \text{lerp}(a,b,t) = (1 - t)a + tb.
+   $$
+
+---
+
+3. **Displacement Clamping:**
+
+   $$
+   \delta_x = \text{clip}(h_{t,x} - h_{0,x}, \Delta x^H),
+   $$
+
+   $$
+   \delta_y = \text{clip}(h_{t,y} - h_{0,y}, \Delta y^H),
+   $$
+
+   $$
+   \delta_z = \text{clip}(h_{t,z} - h_{0,z}, \Delta z^H),
+   $$
+
+   with  
+
+   $$
+   \text{clip}(x,[a,b]) = \min(\max(x,a),b).
+   $$
+
+---
+
+4. **Base Axis Scaling:**
+
+   $$
+   d_x = s_x \delta_x, \qquad 
+   d_y = s_y \delta_y, \qquad 
+   d_z = s_z \delta_z.
+   $$
+
+---
+
 5. **Height-Dependent Scaling:**
-   $$\hat{s}_x=\min(s_x e^{(z_{\text{cur}}-z_r)},s_{xz,\max}),\ \hat{s}_y=\min(s_y e^{(z_{\text{cur}}-z_r)},s_{y,\max}),\ \hat{s}_z=\min(s_z e^{(z_{\text{cur}}-z_r)},s_{xz,\max})$$
-6. **Pitch-Dependent Scaling:** $b_\theta=\text{clip}(1+k_\theta\tfrac{\theta-\theta_{\text{start}}}{50},1,k_{\theta,\max})$ for $\theta>\theta_{\text{start}}$.  
 
-7. **Ground Slowdown:**  
    $$
-   \sigma_z=
+   \hat{s}_x = \min(s_x e^{(z_{\text{cur}} - z_r)}, s_{xz,\max}),
+   $$
+
+   $$
+   \hat{s}_y = \min(s_y e^{(z_{\text{cur}} - z_r)}, s_{y,\max}),
+   $$
+
+   $$
+   \hat{s}_z = \min(s_z e^{(z_{\text{cur}} - z_r)}, s_{xz,\max}).
+   $$
+
+---
+
+6. **Pitch-Dependent Scaling:**
+
+   $$
+   b_\theta = 
+   \text{clip}\!\left(1 + k_\theta 
+   \frac{\theta - \theta_{\text{start}}}{50},\, 1,\, k_{\theta,\max}\right),
+   \qquad \text{for } \theta > \theta_{\text{start}}.
+   $$
+
+---
+
+7. **Ground Slowdown:**
+
+   $$
+   \sigma_z =
    \begin{cases}
-   1-\lambda_s\!\left(1-\tfrac{z_{\text{cur}}-(z_s-\Delta z_s)}{\Delta z_s}\right), & z_{\text{cur}}<z_s,\\[4pt]
-   1, & z_{\text{cur}}\ge z_s.
+   1 - \lambda_s
+   \!\left(1 - 
+   \dfrac{z_{\text{cur}} - (z_s - \Delta z_s)}{\Delta z_s}
+   \right), & z_{\text{cur}} < z_s,\\[6pt]
+   1, & z_{\text{cur}} \ge z_s.
    \end{cases}
    $$
 
-8. **Motion Thresholding:** $\hat{m}_t=\min(\max(\tilde{m}_t,m_{\min}),m_{\max})$.  
+---
 
-9. **Resistance Multiplier:**  
+8. **Motion Thresholding:**
+
    $$
-   \rho_t=
+   \hat{m}_t = 
+   \min\!\big(\max(\tilde{m}_t, m_{\min}), m_{\max}\big).
+   $$
+
+---
+
+9. **Resistance Multiplier:**
+
+   $$
+   \rho_t =
    \begin{cases}
-   \rho_{\max}, & \hat{m}_t \le m_{\min}+\delta_\rho,\\[4pt]
-   \rho_{\min}, & \hat{m}_t \ge m_{\max}-\delta_\rho,\\[4pt]
-   \text{lerp}\!\left(\rho_{\max},\rho_{\min},\tfrac{\hat{m}_t-m_{\min}}{m_{\max}-m_{\min}}\right), & \text{otherwise.}
+   \rho_{\max}, & \hat{m}_t \le m_{\min} + \delta_\rho,\\[6pt]
+   \rho_{\min}, & \hat{m}_t \ge m_{\max} - \delta_\rho,\\[6pt]
+   \text{lerp}\!\left(
+   \rho_{\max}, \rho_{\min},
+   \dfrac{\hat{m}_t - m_{\min}}{m_{\max} - m_{\min}}
+   \right), & \text{otherwise.}
    \end{cases}
    $$
 
-10. **Combined Scaling:** 
-  $$r_x=\rho_t\hat{s}_x d_x,\ r_y=\rho_t\hat{s}_y d_y,\ r_z=\rho_t\hat{s}_z b_\theta\sigma_z d_z$$
-11. **Position Smoothing:** 
-  $$\tilde{\mathbf{p}}_t^R=(1-\alpha)\tilde{\mathbf{p}}_{t-1}^R+\alpha\mathbf{p}_t^R$$, where small α→smooth/lag, large α→fast/noisy.
+---
+
+10. **Combined Scaling:**
+
+    $$
+    r_x = \rho_t \hat{s}_x d_x, \qquad
+    r_y = \rho_t \hat{s}_y d_y, \qquad
+    r_z = \rho_t \hat{s}_z b_\theta \sigma_z d_z.
+    $$
+
+---
+
+11. **Position Smoothing:**
+
+    $$
+    \tilde{\mathbf{p}}_t^R = 
+    (1 - \alpha)\tilde{\mathbf{p}}_{t-1}^R + 
+    \alpha \mathbf{p}_t^R.
+    $$
+
+    Small α → smooth/lag, large α → fast/noisy.
+
+---
 
 ##### Summary
-The adaptive mapper continuously blends height-dependent scaling, pitch-aware amplification, ground slowdown, and motion resistance smoothing to achieve stable, intuitive, and safe teleoperation across the robot’s workspace.
+The adaptive mapper continuously blends height-dependent scaling, pitch-aware amplification, ground slowdown, and motion-resistance smoothing to achieve stable, intuitive, and safe teleoperation across the robot’s workspace.
