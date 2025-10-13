@@ -99,6 +99,36 @@ By using this dataset, we aim to train models that generate high-quality robot t
 
 ---
 
+<heading>Teleoperation Tasks Demo</heading>
+
+<div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
+  <iframe class="embed-responsive-item"
+          src="https://drive.google.com/file/d/1why7RwDyutQ-Nh82tbSZvTIdnDxn6oLW/preview"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+  </iframe>
+</div>
+
+<div class="figure-caption">
+  Demonstration of teleoperation tasks performed with the physical VX300s robot arm by RGB-based hand tracking in real time.
+</div>
+
+---
+
+<heading>Robot Imitation Learning</heading>
+
+<div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
+  <iframe class="embed-responsive-item"
+          src="https://drive.google.com/file/d/1xn9Pt2lOfbbGdhPWujNqPAoEyKmrKA7e/preview"
+          allow="autoplay; encrypted-media"
+          allowfullscreen>
+  </iframe>
+</div>
+
+<div class="figure-caption">
+  One-shot imitation learning demonstration showing the physical robot replicating the human-demonstrated task in 10 different scenes.
+</div>
+
 <heading>System Design</heading>
 The overall workflow of the proposed **real-time robot teleoperation system** is as follows:
 
@@ -447,35 +477,254 @@ $$
 - Ideal balance produces stable and natural robot movement.
 
 #### Adaptive Motion Scaling Strategy
+- **Purpose:**  
+  Present the adaptive motion scaling strategy implemented for the **Interbotix VX300s** robot arm.  
+  The method integrates **orientation clamping** and a **dynamic hand-to-robot mapping algorithm** that scales end-effector (EE) positions for both precision and workspace coverage.  
+  While tailored to the VX300s, the approach generalises to other robot platforms.
 
 ---
 
-<heading>Teleoperation Tasks Demo</heading>
+##### Orientation Clamping
 
-<div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
-  <iframe class="embed-responsive-item"
-          src="https://drive.google.com/file/d/1why7RwDyutQ-Nh82tbSZvTIdnDxn6oLW/preview"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-  </iframe>
-</div>
+- **Concept:**  
+  According to the Interbotix VX300s specifications, the EE has rotation limits:
 
-<div class="figure-caption">
-  Demonstration of teleoperation tasks performed with the physical VX300s robot arm by RGB-based hand tracking in real time.
-</div>
+  $$
+  \text{roll} \in [-180^\circ,\, 180^\circ], \quad
+  \text{pitch} \in [-107^\circ,\, 130^\circ], \quad
+  \text{yaw} \in [-180^\circ,\, 180^\circ].
+  $$
+
+- **Problem:**  
+  When the human hand tilts near these bounds (e.g. upward pitch), the **IK solver** may produce abrupt changes in joint configuration, causing discontinuous and unsafe robot motion.
+
+- **Solution:**  
+  Apply **orientation clamping**:
+  - roll ∈ [−160°, +160°]  
+  - pitch, yaw ∈ [−85°, +85°]  
+  This prevents unsafe or discontinuous IK results while maintaining natural orientation fidelity.
+
+- **Effect:**  
+  Ensures continuous, stable, and safe control during teleoperation while preserving sufficient rotation for manipulation tasks.
 
 ---
 
-<heading>Robot Imitation Learning</heading>
+##### Dynamic Hand-to-Robot Mapper
 
-<div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
-  <iframe class="embed-responsive-item"
-          src="https://drive.google.com/file/d/1xn9Pt2lOfbbGdhPWujNqPAoEyKmrKA7e/preview"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-  </iframe>
-</div>
+- **Objective:**  
+  Scale human hand displacements into robot EE positions with dynamic responsiveness — precise near the ground, fast when elevated.
 
-<div class="figure-caption">
-  One-shot imitation learning demonstration showing the physical robot replicating the human-demonstrated task in 10 different scenes.
-</div>
+- **Illustration:**  
+  The robot’s mapped motion along the X, Y, and Z axes is shown below.  
+  Configured parameters are summarised in *Appendix Dynamic Mapper Configuration*.
+
+| ![Mapping X](/assets/img/mapping_x.png) ![Mapping Y](/assets/img/mapping_y.png) ![Mapping Z](/assets/img/mapping_z.png) |
+|:----------------------------------------------------------------------------------------------------------------------:|
+| *Mapping human hand displacements to robot EE positions along the X, Y, and Z axes using the dynamic mapper.* |
+
+---
+
+##### Dynamic Hand-to-Robot Mapping Algorithm
+
+The mapping from the measured hand position $h_t$ to the commanded EE position $p_t$ proceeds through the following steps:
+
+---
+
+###### Step 1: Smoothed Hand Motion Magnitude
+
+**Purpose:**  
+Estimate a smoothed motion magnitude $\tilde{m}_t$ to stabilise velocity estimation and suppress jitter.
+
+**Formula:**
+$$
+m_t = \|h_t - h_{t-1}\|, \qquad
+\tilde{m}_t = (1-\beta)\tilde{m}_{t-1} + \beta m_t
+$$
+
+**Parameter effect:**  
+- Small β → smoother but slower response  
+- Large β → more responsive but jittery
+
+---
+
+###### Step 2: Height-Dependent Displacement Range
+
+**Purpose:**  
+Adapt displacement ranges with hand height for precise low-level control and freer motion when raised.
+
+**Formula:**
+$$
+z_{\text{cur}} = z_h + (h_{t,z} - h_{0,z})
+$$
+$$
+\tau_z^{\text{clamp}} = \min\!\Big(\max\!\big(\tfrac{z_{\text{cur}} - z_{\min}^R}{z_r - z_{\min}^R}, 0\big), 1\Big)
+$$
+$$
+\Delta x^H =
+\big[\text{lerp}(\Delta x_{\min}^-, \Delta x^-, \tau_z^{\text{clamp}}),
+     \text{lerp}(\Delta x_{\min}^+, \Delta x^+, \tau_z^{\text{clamp}})\big]
+$$
+$$
+\Delta y^H =
+\big[\text{lerp}(\Delta y_{\min}^-, \Delta y^-, \tau_z^{\text{clamp}}),
+     \text{lerp}(\Delta y_{\min}^+, \Delta y^+, \tau_z^{\text{clamp}})\big]
+$$
+$$
+\Delta z^H = [\Delta z^-, \Delta z^+]
+$$
+with $\text{lerp}(a,b,t) = (1-t)a + tb,\ t \in [0,1]$.
+
+**Parameter effect:**  
+- Smaller $(\Delta x_{\min}, \Delta y_{\min})$: high precision near ground  
+- Larger $(\Delta x_{\min}, \Delta y_{\min})$: faster but less stable  
+- Larger $z_r$: extended fine-control region  
+
+---
+
+###### Step 3: Hand Displacement Clamping
+
+**Purpose:**  
+Clip raw hand displacements to safe workspace limits.
+
+**Formula:**
+$$
+\delta_x = \text{clip}(h_{t,x}-h_{0,x},\,\Delta x^H), \quad
+\delta_y = \text{clip}(h_{t,y}-h_{0,y},\,\Delta y^H), \quad
+\delta_z = \text{clip}(h_{t,z}-h_{0,z},\,\Delta z^H)
+$$
+with $\text{clip}(x,[a,b]) = \min(\max(x,a),b)$.
+
+---
+
+###### Step 4: Base Axis Scaling
+
+**Purpose:**  
+Map hand displacements to robot motions using scaling factors $s_x, s_y, s_z$.
+
+**Formula:**
+$$
+d_x = s_x\,\delta_x, \quad
+d_y = s_y\,\delta_y, \quad
+d_z = s_z\,\delta_z
+$$
+
+---
+
+###### Step 5: Height-Dependent Scaling Adjustment
+
+**Purpose:**  
+Increase scaling when the hand is raised above $z_r$, capped by maximum limits.
+
+**Formula:**
+$$
+\hat{s}_y = \min\!\big(s_y e^{(z_{\text{cur}}-z_r)},\, s_{y,\max}\big)
+$$
+$$
+\hat{s}_x = \min\!\big(s_x e^{(z_{\text{cur}}-z_r)},\, s_{xz,\max}\big)
+$$
+$$
+\hat{s}_z = \min\!\big(s_z e^{(z_{\text{cur}}-z_r)},\, s_{xz,\max}\big)
+$$
+
+---
+
+###### Step 6: Pitch-Dependent Vertical Scaling
+
+**Purpose:**  
+Boost vertical response when the hand tilts downward.
+
+**Formula:**
+$$
+b_\theta =
+\begin{cases}
+\text{clip}\!\left(1 + k_\theta \tfrac{\theta - \theta_{\text{start}}}{50},\, 1,\, k_{\theta,\max}\right), & \theta > \theta_{\text{start}} \\
+1, & \text{otherwise}
+\end{cases}
+$$
+
+---
+
+###### Step 7: Ground Slowdown Scaling
+
+**Purpose:**  
+Reduce vertical speed near the ground to prevent collisions.
+
+**Formula:**
+$$
+\sigma_z =
+\begin{cases}
+1 - \lambda_s \left(1 - \tfrac{z_{\text{cur}} - (z_s-\Delta z_s)}{\Delta z_s}\right), & z_{\text{cur}} < z_s \\
+1, & z_{\text{cur}} \ge z_s
+\end{cases}
+$$
+
+---
+
+###### Step 8: Motion Thresholding
+
+**Purpose:**  
+Ignore tiny hand jitters and limit excessive motion.
+
+**Formula:**
+$$
+\hat{m}_t = \min(\max(\tilde{m}_t, m_{\min}), m_{\max})
+$$
+
+---
+
+###### Step 9: Resistance Multiplier Computation
+
+**Purpose:**  
+Adjust resistance $\rho_t$ based on hand motion magnitude for fine vs. coarse control.
+
+**Formula:**
+$$
+\rho_t =
+\begin{cases}
+\rho_{\max}, & \hat{m}_t \le m_{\min} + \delta_\rho \\
+\rho_{\min}, & \hat{m}_t \ge m_{\max} - \delta_\rho \\
+\text{lerp}(\rho_{\max}, \rho_{\min}, \tfrac{\hat{m}_t - m_{\min}}{m_{\max}-m_{\min}}), & \text{otherwise}
+\end{cases}
+$$
+
+---
+
+###### Step 10: Combined Scaling Application
+
+**Purpose:**  
+Combine all scaling, resistance, and slowdown factors into final robot displacements.
+
+**Formula:**
+$$
+r_x = \rho_t \hat{s}_x d_x, \quad
+r_y = \rho_t \hat{s}_y d_y, \quad
+r_z = \rho_t \hat{s}_z b_\theta \sigma_z d_z
+$$
+
+---
+
+###### Step 11: Position Smoothing
+
+**Purpose:**  
+Stabilise final robot trajectory using exponential smoothing.
+
+**Formula:**
+$$
+\tilde{\mathbf{p}}_t^R = (1-\alpha)\tilde{\mathbf{p}}_{t-1}^R + \alpha \mathbf{p}_t^R
+$$
+
+**Effect:**  
+- Small α → smooth but lagging  
+- Large α → fast but noisy  
+
+---
+
+##### Summary
+The adaptive mapper continuously blends:
+- **Height-dependent scaling**  
+- **Pitch-aware amplification**  
+- **Ground slowdown**  
+- **Motion resistance and smoothing**
+
+to achieve **stable, intuitive, and safe teleoperation** across the robot’s full workspace.
+
