@@ -159,7 +159,105 @@ T和he figure below illustrates the hand tracking pipeline:
 The following steps are done in the motion retargeting pipeline:
 
 #### Human-to-Robot Cartesian Position and Orientation Transformation
-- Purpose:
+- **Purpose:**  
+  Map human hand movements to the robot’s two-finger gripper intuitively and stably.
+
+- **Concept:**  
+  The thumb corresponds to the left gripper finger, and the index finger (or closed four fingers) represents the right finger.  
+  In this project, only the **thumb–index pair** is used for simplicity and stability.
+
+##### Human Hand Position and Orientation
+- **Keypoints:**  
+  \( \mathcal{M} = \{ M[0], \dots, M[20] \} \) — 21 3D hand keypoints from HaMeR.
+
+- **Gripper Centre:**  
+  \[
+  p_\text{mid} = \frac{M[2] + M[5]}{2}, \quad
+  p_\text{gc} = \frac{p_\text{mid} + M[4] + M[8]}{3}
+  \]
+
+- **Orientation Axes:**  
+  \[
+  \hat{x} = \frac{p_\text{index} - p_\text{thumb}}{\|p_\text{index} - p_\text{thumb}\|}, \quad
+  \hat{z} = \frac{(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})}{\|(p_\text{index} - p_\text{mid}) \times (p_\text{thumb} - p_\text{mid})\|}, \quad
+  \hat{y} = \frac{\hat{z} \times \hat{x}}{\|\hat{z} \times \hat{x}\|}
+  \]
+
+- **Remarks:**  
+  These form a right-handed coordinate frame representing the hand’s local orientation.
+
+---
+
+##### Human-to-Robot Transformation
+- **Axis Mapping:**  
+  \[
+  \hat{x}_R = -\hat{z}_H,\;
+  \hat{y}_R = \hat{x}_H,\;
+  \hat{z}_R = -\hat{y}_H
+  \]
+  Matrix form:  
+  \[
+  A_{R \leftarrow H} =
+  \begin{bmatrix}
+  0 & 0 & -1\\
+  1 & 0 &  0\\
+  0 & -1 &  0
+  \end{bmatrix}
+  \]
+
+- **Position Mapping:**  
+  \[
+  p_R = A_{R \leftarrow H}\, p_H
+  \]
+  Maps relative displacements as  
+  \((z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)\).
+
+- **Orientation Mapping:**  
+  \[
+  R_R = A_{R \leftarrow H}\, R_H
+  \]
+
+---
+
+##### End-Effector Position and Orientation
+- **Position Computation:**  
+  \[
+  \Delta p_t = p_t^{meas} - p_0,\quad
+  \widetilde{\Delta p}_t = \Pi_t \Delta p_t,\quad
+  \widehat{\Delta p}_t = \mathcal{K}[\widetilde{\Delta p}_t],\quad
+  \tilde{p}^{ee}_t = g(p_0 + \widehat{\Delta p}_t)
+  \]
+  Purity weighting and Kalman filtering smooth motion and suppress noise.
+
+- **Orientation Computation:**  
+  \[
+  R_\Delta = R_R\, R_0^\mathsf{T}
+  \]
+  Convert to Euler angles → unwrap → apply purity weighting and Kalman filter →  
+  convert to quaternion \( q^{ee}_t = \operatorname{Quat}_{xyz}(\widehat{\theta}_t) \).
+
+- **Notes:**  
+  - Angle unwrapping prevents discontinuities.  
+  - Kalman filtering ensures smooth motion.  
+  - Euler angles are intermediate; quaternions are used for IK.  
+
+---
+
+##### Gripper State
+- **Definition:**  
+  \[
+  d_\text{grip} = \|p_\text{thumb} - p_\text{index}\|
+  \]
+  \[
+  S_\text{grip} =
+  \begin{cases}
+  \text{Closed}, & d_\text{grip} < 0.08\text{ m}\\
+  \text{Open}, & d_\text{grip} > 0.10\text{ m}
+  \end{cases}
+  \]
+
+- **Remarks:**  
+  The gripper state is determined from the thumb–index fingertip distance (in metres, camera frame).
 
 #### Purity-Weighted Decoupling of Translation and Rotation
 - Purpose:
