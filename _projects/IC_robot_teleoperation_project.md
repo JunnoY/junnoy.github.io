@@ -62,7 +62,7 @@ papertitle {
 
 /* --- Captions --- */
 .caption {
-  font-family: 'Source Serif Pro', serif;
+  font-family: 'Times New Roman', 'Source Serif Pro', serif;
   font-size: 15px;
   color: #666;
   text-align: center;
@@ -100,7 +100,7 @@ We implement a **real-time vision-based robot teleoperation framework** using ha
 </div>
 
 <div class="caption">
-  Demonstration of teleoperation tasks performed with the robot in real time.
+  Demonstration of teleoperation tasks performed with the physical VX300s robot arm by RGB-based hand tracking in real time.
 </div>
 
 ---
@@ -116,5 +116,5 @@ We implement a **real-time vision-based robot teleoperation framework** using ha
 </div>
 
 <div class="caption">
-  Imitation learning demonstration showing robot reproducing hand-guided actions.
+  One-shot imitation learning demonstration showing the physical robot replicating the human-demonstrated task in 10 different scenes.
 </div>
