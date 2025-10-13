@@ -253,7 +253,8 @@ The following steps are done in the motion retargeting pipeline:
 - $\epsilon$ prevents division by zero and $\pi_t^{trans}+\pi_t^{rot}\approx1$
 
 ##### Weighted Decoupling
-- **Mechanism:** If $\pi_t^{rot}\ge0.8$, translation increment $\Delta\mathbf{p}_t$ is **suppressed**, indicating primarily rotational motion. 
+- **Mechanism:** 
+  - If $\pi_t^{rot}\ge0.8$, translation increment $\Delta\mathbf{p}_t$ is **suppressed**, indicating primarily rotational motion.
   - If $\pi_t^{trans}$ dominates, the rotational increment $\Delta\boldsymbol{\theta}_t$ is **down-weighted** but not fully suppressed.  
 - **Effect:** Purity weights act as dynamic filters that separate translation and rotation, reducing cross-contamination.
 
