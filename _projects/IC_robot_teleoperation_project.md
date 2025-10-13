@@ -17,7 +17,7 @@ related_publications: false
 .page-content td,
 .page-content th,
 .page-content tr,
-.page-content .figure-caption {
+.page-content {
   font-family: 'Source Serif Pro', Georgia, 'Times New Roman', serif;
   font-size: 18px;
   line-height: 1.7;
