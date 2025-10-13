@@ -273,10 +273,165 @@ the red point represents $\mathbf{p}_{\text{gc}}$.</em>
   The gripper state is determined from the thumb–index fingertip distance (in metres, camera frame).
 
 #### Purity-Weighted Decoupling of Translation and Rotation
-- Purpose:
+- **Purpose:**  
+  Reduce unintended coupling between translation and rotation during hand-controlled robot teleoperation.
 
-#### Kalman Filter For Smoothed Motion
-- Purpose:
+- **Problem:**  
+  Human hand motion naturally links changes in position and orientation.  
+  When the user intends to rotate the hand, small translations often occur — and vice versa — causing non-intuitive robot EE motion.
+
+- **Solution:**  
+  Introduce a *motion purity mechanism* that computes translation–rotation purity scores at each time step and uses them as weights to decouple the two motion modes.
+
+##### Purity Metrics
+- **Translational and rotational magnitudes:**
+  \[
+  m_t^{\text{trans}} = \|\Delta \mathbf{p}_t\|_2, \qquad
+  m_t^{\text{rot}} = \|\Delta \boldsymbol{\theta}_t\|_2
+  \]
+  where  
+  - \( \Delta \mathbf{p}_t \): position increment  
+  - \( \Delta \boldsymbol{\theta}_t \): orientation increment (roll–pitch–yaw form)
+
+##### Purity Scores
+- **Definition:**
+  \[
+  \pi_t^{\text{trans}} =
+  \frac{m_t^{\text{trans}}}{m_t^{\text{trans}} + m_t^{\text{rot}} + \epsilon}, \qquad
+  \pi_t^{\text{rot}} =
+  \frac{m_t^{\text{rot}}}{m_t^{\text{trans}} + m_t^{\text{rot}} + \epsilon}
+  \]
+  where \( \epsilon \) is a small constant to prevent division by zero.  
+  By design, \( \pi_t^{\text{trans}} + \pi_t^{\text{rot}} \approx 1 \).
+
+##### Weighted Decoupling
+- **Mechanism:**
+  - If \( \pi_t^{\text{rot}} \ge 0.8 \): translation increment \( \Delta \mathbf{p}_t \) is **suppressed**, indicating primarily rotational motion.  
+  - If \( \pi_t^{\text{trans}} \) dominates: rotational increment \( \Delta \boldsymbol{\theta}_t \) is **down-weighted** but not fully suppressed.
+
+- **Effect:**  
+  The purity weights act as dynamic filters, separating translation and rotation to reduce cross-contamination.
+
+##### Remarks
+- Enhances precision and intuitiveness in teleoperation.  
+- Prevents small hand jitters from causing mixed translation–rotation movements.  
+- Complements Kalman filtering for smooth control performance.
+
+
+#### Kalman Filter for Smoothed Motion
+- **Purpose:**  
+  Apply Kalman filtering to smooth robot position and orientation changes, reducing noise from visual measurements.
+
+- **Background:**  
+  The **Kalman filter** (Rudolf E. Kalman, 1960) estimates unobservable states from noisy observations by combining predictions from a motion model with incoming sensor data.  
+  It is widely used in robot vision for fusing uncertain visual measurements over time, providing accurate and stable estimates of robot or target motion.
+
+- **Implementation:**  
+  This project uses a **constant-velocity Kalman filter**, applied separately to **translation** and **rotation**.  
+  The filter operates on *incremental changes* (not absolute poses), as relative dynamics are better captured by the constant-velocity assumption.
+
+---
+
+##### Kalman Filtering for Relative Motion
+- **Parameters:**  
+  The Kalman filter uses tunable covariance matrices:
+  - **P (State covariance):** confidence in current estimate — larger → rely more on new measurements.  
+  - **Q (Process noise):** uncertainty in motion model — larger → faster response but more noise.  
+  - **R (Measurement noise):** uncertainty in observations — larger → smoother but less responsive output.
+
+- **Purity weighting:**  
+  Translation and rotation are first decoupled via purity scores (Section *Purity-Weighted Decoupling*):  
+  \[
+  \widetilde{\Delta \mathbf{p}}_t =
+  \begin{bmatrix}
+  \widetilde{\Delta p}_x & \widetilde{\Delta p}_y & \widetilde{\Delta p}_z
+  \end{bmatrix}^\mathsf{T}, \quad
+  \widetilde{\Delta \boldsymbol{\theta}}_t =
+  \begin{bmatrix}
+  \widetilde{\Delta \phi} & \widetilde{\Delta \theta} & \widetilde{\Delta \psi}
+  \end{bmatrix}^\mathsf{T}
+  \]
+
+---
+
+##### Prediction Step
+- **State vectors:**
+  \[
+  \mathbf{x}^p_t =
+  \begin{bmatrix}
+  \widetilde{\Delta p}_x & v_x & \widetilde{\Delta p}_y & v_y & \widetilde{\Delta p}_z & v_z
+  \end{bmatrix}^\mathsf{T}, \quad
+  \mathbf{x}^r_t =
+  \begin{bmatrix}
+  \widetilde{\Delta \phi} & \omega_\phi & \widetilde{\Delta \theta} & \omega_\theta & \widetilde{\Delta \psi} & \omega_\psi
+  \end{bmatrix}^\mathsf{T}
+  \]
+
+- **Constant-velocity model:**
+  \[
+  \hat{\mathbf{x}}_{t|t-1} = \mathbf{F}\,\hat{\mathbf{x}}_{t-1|t-1}, \qquad
+  \mathbf{P}_{t|t-1} = \mathbf{F}\,\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T} + \mathbf{Q}
+  \]
+  where  
+  \[
+  \mathbf{F}_\text{1D} =
+  \begin{bmatrix}
+  1 & \Delta t \\ 0 & 1
+  \end{bmatrix}, \quad \Delta t = 0.01~\text{s}
+  \]
+
+---
+
+##### Correction Step (Direct Perception Input)
+- **Measurement model:**
+  \[
+  \mathbf{z}_t = \mathbf{H}\mathbf{x}_t + \mathbf{v}_t, \quad \mathbf{v}_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R})
+  \]
+  where **zₜ** are perception-based increments from the vision pipeline.
+
+- **Correction update:**
+  \[
+  \hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} + \mathbf{K}_t\left(\mathbf{z}_t - \mathbf{H}\hat{\mathbf{x}}_{t|t-1}\right), \quad
+  \mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t\mathbf{H})\,\mathbf{P}_{t|t-1}
+  \]
+
+---
+
+##### Kalman Gain
+\[
+\mathbf{K}_t = \mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}
+\left(\mathbf{H}\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T} + \mathbf{R}\right)^{-1}
+\]
+
+- **Interpretation:**  
+  The Kalman gain \( \mathbf{K}_t \) adaptively balances:
+  - the **motion model** (prediction), and  
+  - the **sensor measurements** (correction).  
+  It yields smooth yet responsive position and orientation estimates.
+
+---
+
+##### Results
+- **Observation:**  
+  The filtered trajectories closely follow ground truth while removing high-frequency jitter from visual input.
+
+| ![Position Kalman filter](/assets/img/position_x_kf.png) ![Position Y](/assets/img/position_y_kf.png) ![Position Z](/assets/img/position_z_kf.png) |
+|:-------------------------------------------------------------------------------------------------------------------------------------------------:|
+| *Kalman filter smoothing of EE positions (X, Y, Z).* |
+
+| ![Roll Kalman filter](/assets/img/roll_kf.png) ![Pitch Kalman filter](/assets/img/pitch_kf.png) ![Yaw Kalman filter](/assets/img/yaw_kf.png) |
+|:-------------------------------------------------------------------------------------------------------------------------------------------:|
+| *Kalman filter smoothing of EE orientation (Roll, Pitch, Yaw).* |
+
+
+---
+
+##### Remarks
+- The filter efficiently reduces noise while maintaining responsiveness.  
+- Increasing **Q** makes the filter react faster but amplifies noise.  
+- Increasing **R** yields smoother motion but slower response.  
+- Ideal balance produces stable and natural robot movement.
+
 
 #### Adaptive Motion Scaling Strategy
 
