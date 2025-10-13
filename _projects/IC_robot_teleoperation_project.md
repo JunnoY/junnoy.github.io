@@ -13,12 +13,17 @@ related_publications: false
 
 <style>
 /* --- Global Typography --- */
-body, p, td, th, tr {
+.page-content p,
+.page-content td,
+.page-content th,
+.page-content tr,
+.page-content .figure-caption {
   font-family: 'Source Serif Pro', Georgia, 'Times New Roman', serif;
   font-size: 18px;
   line-height: 1.7;
   color: #2b2b2b;
 }
+
 
 /* --- Links --- */
 a {
