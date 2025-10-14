@@ -155,7 +155,7 @@ This design achieves an overall data transmission rate of 30 Hz, satisfying the 
 <p align="center">
   <img src="/assets/img/multi_process_thread.png" alt="Multiprocessing and Multithreading Design" width="80%">
   <br>
-  <em class="figure-caption">Multiprocessing and multithreading in the system design</em>
+  <em class="figure-caption">Multiprocessing and Multithreading in the system design</em>
 </p>
 
 ---
