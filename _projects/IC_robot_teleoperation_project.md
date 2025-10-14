@@ -217,7 +217,7 @@ The following steps are done in the motion retargeting pipeline:
 - **Axis Mapping:** $\hat{x}_R = -\hat{z}_H, \quad \hat{y}_R = \hat{x}_H, \quad \hat{z}_R = -\hat{y}_H$.  
 
 - Matrix form:
-\[
+$$
 A_{R \leftarrow H} =
 \begin{bmatrix}
 0 & 0 & -1 \\
@@ -225,7 +225,7 @@ A_{R \leftarrow H} =
 0 & -1 & 0
 \end{bmatrix}
 \quad \text{(3×3)}
-\]
+$$
 
 - **Position Mapping:** $p_R = A_{R \leftarrow H} \, p_H$. 
   - Maps relative displacements as $(z_H, x_H, y_H) \mapsto (-x_R, y_R, -z_R)$.  
