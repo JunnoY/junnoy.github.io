@@ -189,7 +189,7 @@ The figure below illustrates the hand tracking pipeline:
 <heading>Motion Retargeting</heading>
 The following steps are done in the motion retargeting pipeline:
 
-#### Human-to-Robot Cartesian Position and Orientation Transformation
+##### Human-to-Robot Cartesian Position and Orientation Transformation
 - **Purpose:** Map human hand movements to the robot’s two-finger gripper intuitively and stably.
 
 - **Concept:** The thumb corresponds to the left gripper finger, and the index finger (or closed four fingers) represents the right finger.  
