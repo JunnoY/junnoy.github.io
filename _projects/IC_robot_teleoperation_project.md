@@ -190,6 +190,8 @@ The figure below illustrates the hand tracking pipeline:
 
 The motion retargeting pipeline translates human hand motion—captured from 3D keypoints—into corresponding robot end-effector (EE) commands for intuitive, stable, and responsive teleoperation. It integrates hand pose extraction, coordinate transformation, motion decoupling, temporal filtering, and adaptive scaling.
 
+---
+
 #### **1. Human-to-Robot Cartesian Position and Orientation Transformation**
 
 **Purpose:**  
