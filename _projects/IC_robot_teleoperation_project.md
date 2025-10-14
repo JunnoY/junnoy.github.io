@@ -407,8 +407,9 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
 
    $$
    m_t = \|h_t - h_{t-1}\|, \qquad 
-   \tilde{m}_t = (1 - \beta)\tilde{m}_{t-1} + \beta m_t.
+   \tilde{m}_t = (1 - \beta)\tilde{m}_{t-1} + \beta m_t
    $$
+
    Small β → smooth, large β → responsive.
 
 ---
@@ -422,13 +423,13 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
    $$
    \tau_z^{\text{clamp}} = 
    \min\!\left(\max\!\left(
-   \frac{z_{\text{cur}} - z_{\min}^R}{z_r - z_{\min}^R}, 0\right), 1\right),
+   \frac{z_{\text{cur}} - z_{\min}^R}{z_r - z_{\min}^R}, 0\right), 1\right)
    $$
 
    interpolate $\Delta x^H, \Delta y^H, \Delta z^H$ using  
 
    $$
-   \text{lerp}(a,b,t) = (1 - t)a + tb.
+   \text{lerp}(a,b,t) = (1 - t)a + tb
    $$
 
 ---
@@ -436,21 +437,21 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
 3. **Displacement Clamping:**
 
    $$
-   \delta_x = \text{clip}(h_{t,x} - h_{0,x}, \Delta x^H),
+   \delta_x = \text{clip}(h_{t,x} - h_{0,x}, \Delta x^H)
    $$
 
    $$
-   \delta_y = \text{clip}(h_{t,y} - h_{0,y}, \Delta y^H),
+   \delta_y = \text{clip}(h_{t,y} - h_{0,y}, \Delta y^H)
    $$
 
    $$
-   \delta_z = \text{clip}(h_{t,z} - h_{0,z}, \Delta z^H),
+   \delta_z = \text{clip}(h_{t,z} - h_{0,z}, \Delta z^H)
    $$
 
    with  
 
    $$
-   \text{clip}(x,[a,b]) = \min(\max(x,a),b).
+   \text{clip}(x,[a,b]) = \min(\max(x,a),b)
    $$
 
 ---
@@ -460,7 +461,7 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
    $$
    d_x = s_x \delta_x, \qquad 
    d_y = s_y \delta_y, \qquad 
-   d_z = s_z \delta_z.
+   d_z = s_z \delta_z
    $$
 
 ---
@@ -468,15 +469,15 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
 5. **Height-Dependent Scaling:**
 
    $$
-   \hat{s}_x = \min(s_x e^{(z_{\text{cur}} - z_r)}, s_{xz,\max}),
+   \hat{s}_x = \min(s_x e^{k_z(z_{\text{cur}} - z_r)}, s_{x,\max}),
    $$
 
    $$
-   \hat{s}_y = \min(s_y e^{(z_{\text{cur}} - z_r)}, s_{y,\max}),
+   \hat{s}_y = \min(s_y e^{k_z(z_{\text{cur}} - z_r)}, s_{y,\max}),
    $$
 
    $$
-   \hat{s}_z = \min(s_z e^{(z_{\text{cur}} - z_r)}, s_{xz,\max}).
+   \hat{s}_z = \min(s_z e^{k_z(z_{\text{cur}} - z_r)}, s_{z,\max})
    $$
 
 ---
@@ -487,7 +488,7 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
    b_\theta = 
    \text{clip}\!\left(1 + k_\theta 
    \frac{\theta - \theta_{\text{start}}}{50},\, 1,\, k_{\theta,\max}\right),
-   \qquad \text{for } \theta > \theta_{\text{start}}.
+   \qquad \text{for } \theta > \theta_{\text{start}}
    $$
 
 ---
@@ -501,7 +502,7 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
    \!\left(1 - 
    \dfrac{z_{\text{cur}} - (z_s - \Delta z_s)}{\Delta z_s}
    \right), & z_{\text{cur}} < z_s,\\[6pt]
-   1, & z_{\text{cur}} \ge z_s.
+   1, & z_{\text{cur}} \ge z_s
    \end{cases}
    $$
 
@@ -511,7 +512,7 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
 
    $$
    \hat{m}_t = 
-   \min\!\big(\max(\tilde{m}_t, m_{\min}), m_{\max}\big).
+   \min\!\big(\max(\tilde{m}_t, m_{\min}), m_{\max}\big)
    $$
 
 ---
@@ -537,7 +538,7 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
     $$
     r_x = \rho_t \hat{s}_x d_x, \qquad
     r_y = \rho_t \hat{s}_y d_y, \qquad
-    r_z = \rho_t \hat{s}_z b_\theta \sigma_z d_z.
+    r_z = \rho_t \hat{s}_z b_\theta \sigma_z d_z
     $$
 
 ---
@@ -547,12 +548,11 @@ The mapping from hand position $h_t$ to EE command $p_t$ proceeds through:
     $$
     \tilde{\mathbf{p}}_t^R = 
     (1 - \alpha)\tilde{\mathbf{p}}_{t-1}^R + 
-    \alpha \mathbf{p}_t^R.
+    \alpha \mathbf{p}_t^R
     $$
 
     Small α → smooth/lag, large α → fast/noisy.
 
 ---
-
 ##### Summary
 The adaptive mapper continuously blends height-dependent scaling, pitch-aware amplification, ground slowdown, and motion-resistance smoothing to achieve stable, intuitive, and safe teleoperation across the robot’s workspace.
