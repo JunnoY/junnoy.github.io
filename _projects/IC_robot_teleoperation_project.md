@@ -7,9 +7,7 @@ category: work
 related_publications: false
 ---
 
-<a href="https://www.doc.ic.ac.uk/~ajd/" target="_blank">
-Imperial MSc. Robotics Project, supervised by Prof. Andrew Davison
-</a>
+Imperial MSc. Robotics Project, supervised by <a href="https://www.doc.ic.ac.uk/~ajd/" target="_blank">Prof. Andrew Davison</a>
 
 <!-- Import fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700&family=Source+Serif+Pro:wght@400;600&display=swap" rel="stylesheet">
