@@ -387,7 +387,7 @@ The filter reduces noise while maintaining responsiveness. Increasing **Q** spee
 ##### Orientation Clamping
 - The EE rotation limits are $\text{roll} \in \[-180^\circ,180^\circ],\ \text{pitch} \in [-107^\circ,130^\circ],\ \text{yaw} \in [-180^\circ,180^\circ]$. 
 - Near these bounds (e.g. high pitch), the IK solver may produce abrupt joint changes. 
-- Orientation clamping restricts roll, pitch, yaw to [−160°, +160°], [−85°, +85°], [−85°, +85°], preventing unsafe discontinuities while maintaining natural fidelity.
+- Orientation clamping restricts roll, pitch, yaw to $[−160°, +160°], [−85°, +85°], [−85°, +85°]$, preventing unsafe discontinuities while maintaining natural fidelity.
 
 ##### Dynamic Hand-to-Robot Mapper
 Scales human hand displacements into robot EE positions with dynamic responsiveness — precise near the ground, faster when raised.
