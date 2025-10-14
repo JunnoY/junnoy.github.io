@@ -109,9 +109,9 @@ By using this dataset, we aim to train models that generate high-quality robot t
   </iframe>
 </div>
 
-<div class="figure-caption">
+<em class="figure-caption">
   Demonstration of teleoperation tasks performed with the physical VX300s robot arm by RGB-based hand tracking in real time.
-</div>
+</em>
 
 ---
 
@@ -125,9 +125,9 @@ By using this dataset, we aim to train models that generate high-quality robot t
   </iframe>
 </div>
 
-<div class="figure-caption">
+<em class="figure-caption">
   One-shot imitation learning demonstration showing the physical robot replicating the human-demonstrated task in 10 different scenes.
-</div>
+</em>
 
 ---
 
