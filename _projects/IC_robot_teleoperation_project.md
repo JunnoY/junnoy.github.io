@@ -297,61 +297,62 @@ Enhances precision and intuitiveness in teleoperation, prevents small hand jitte
   - **R** (measurement noise) controls observation uncertainty
   - Larger **Q** → faster but noisier; larger **R** → smoother but slower
 - **Purity weighting:** Translation and rotation are first decoupled via purity scores: 
-  - $\widetilde{\Delta\mathbf{p}}_t=[\widetilde{\Delta p}_x,\widetilde{\Delta p}_y,\widetilde{\Delta p}_z]^\mathsf{T},\ \widetilde{\Delta\boldsymbol{\theta}}_t=[\widetilde{\Delta\phi},\widetilde{\Delta\theta},\widetilde{\Delta\psi}]^\mathsf{T}$.
+  - $\widetilde{\Delta\mathbf{p}}_t=[\widetilde{\Delta p}_x,\widetilde{\Delta p}_y,\widetilde{\Delta p}_z]^\mathsf{T}$
+  - $\widetilde{\Delta\boldsymbol{\theta}}_t=[\widetilde{\Delta\phi},\widetilde{\Delta\theta},\widetilde{\Delta\psi}]^\mathsf{T}$
 
 ##### Prediction Step
 
-State vectors:  
-\[
+- State vectors:  
+$$\[
 \mathbf{x}^p_t = [\widetilde{\Delta p}_x, v_x, \widetilde{\Delta p}_y, v_y, \widetilde{\Delta p}_z, v_z]^\mathsf{T}
 \]
 \[
 \mathbf{x}^r_t = [\widetilde{\Delta\phi}, \omega_\phi, \widetilde{\Delta\theta}, \omega_\theta, \widetilde{\Delta\psi}, \omega_\psi]^\mathsf{T}
-\]
+\]$$
 
 Constant-velocity model:  
-\[
+$$
 \hat{\mathbf{x}}_{t|t-1} = \mathbf{F}\hat{\mathbf{x}}_{t-1|t-1}, \quad
 \mathbf{P}_{t|t-1} = \mathbf{F}\mathbf{P}_{t-1|t-1}\mathbf{F}^\mathsf{T} + \mathbf{Q}
-\]
+$$
 where  
-\[
+$$
 \mathbf{F}_{1D} =
 \begin{bmatrix}
 1 & \Delta t \\
 0 & 1
 \end{bmatrix}, \quad
-\Delta t = 0.01\,\text{s}.
-\]
+\Delta t = 0.01\,\text{s}
+$$
 
 ---
 
 ##### Correction Step (Direct Perception Input)
 
-Measurement model:  
-\[
+- Measurement model:  
+$$
 \mathbf{z}_t = \mathbf{H}\mathbf{x}_t + \mathbf{v}_t, \quad
 \mathbf{v}_t \sim \mathcal{N}(\mathbf{0}, \mathbf{R})
-\]
-where $\mathbf{z}_t$ are increments from vision.
+$$
+where $\mathbf{z}_t$ are increments from vision
 
-Correction update:  
-\[
+- Correction update:  
+$$
 \hat{\mathbf{x}}_{t|t} = \hat{\mathbf{x}}_{t|t-1} +
 \mathbf{K}_t(\mathbf{z}_t - \mathbf{H}\hat{\mathbf{x}}_{t|t-1}), \quad
-\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t\mathbf{H})\mathbf{P}_{t|t-1}.
-\]
+\mathbf{P}_{t|t} = (\mathbf{I} - \mathbf{K}_t\mathbf{H})\mathbf{P}_{t|t-1}
+$$
+
 
 ---
 
 ##### Kalman Gain
-
-\[
+- $$
 \mathbf{K}_t =
 \mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T}
 (\mathbf{H}\mathbf{P}_{t|t-1}\mathbf{H}^\mathsf{T} + \mathbf{R})^{-1}
-\]
-The Kalman gain adaptively balances prediction (motion model) and correction (sensor data),
+$$
+- The Kalman gain adaptively balances prediction (motion model) and correction (sensor data),
 producing smooth, responsive position and orientation estimates.
 
 ##### Results
@@ -384,7 +385,7 @@ The filter reduces noise while maintaining responsiveness. Increasing **Q** spee
   - Though tailored to the VX300s, the method generalises to other robot platforms.
 
 ##### Orientation Clamping
-- The EE rotation limits are $\text{roll}\!\in\![-180^\circ,180^\circ],\ \text{pitch}\!\in\![-107^\circ,130^\circ],\ \text{yaw}\!\in\![-180^\circ,180^\circ]$. 
+- The EE rotation limits are $\text{roll} \in \[-180^\circ,180^\circ],\ \text{pitch} \in [-107^\circ,130^\circ],\ \text{yaw} \in [-180^\circ,180^\circ]$. 
 - Near these bounds (e.g. high pitch), the IK solver may produce abrupt joint changes. 
 - Orientation clamping restricts roll, pitch, yaw to [−160°, +160°], [−85°, +85°], [−85°, +85°], preventing unsafe discontinuities while maintaining natural fidelity.
 
