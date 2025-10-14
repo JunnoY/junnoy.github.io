@@ -1,3 +1,19 @@
+<style>
+.card-title {
+  font-size: 14px;     /* ↓ smaller title */
+  font-weight: 600;    /* lighter weight for balance */
+  line-height: 1.2;
+  text-align: center;  /* optional */
+  margin-top: 0.5rem;
+}
+
+.card-text {
+  font-size: 12px;     /* smaller description too */
+  color: #666;
+  text-align: center;
+}
+</style>
+
 <div class="col">
   <a href="{% if project.redirect %}{{ project.redirect }}{% else %}{{ project.url | relative_url }}{% endif %}">
     <div class="card h-100 hoverable">
