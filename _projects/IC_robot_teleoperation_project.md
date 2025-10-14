@@ -285,7 +285,9 @@ Clean, temporally consistent trajectories suitable for real-time control.
 #### **6. Adaptive Motion Scaling Strategy**
 
 **Objective:**  
-To map human hand movements to the robot’s workspace dynamically — precise near the ground and faster at higher elevations — while maintaining smooth, safe motion.
+To map human hand movements to the robot’s workspace dynamically, ensuring
+    - precise near the ground and faster at higher elevations
+    - maintaining smooth, safe motion.
 
 ##### **(a) Orientation Clamping**  
 Limits roll, pitch, and yaw within safe ranges to prevent unstable IK solutions and abrupt joint changes.
