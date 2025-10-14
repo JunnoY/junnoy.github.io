@@ -264,6 +264,22 @@ To smooth noisy visual input and produce stable EE motion.
 **Outcome:**  
 Clean, temporally consistent trajectories suitable for real-time control.
 
+<p align="center">
+  <img src="/assets/img/position_x_kf.png" alt="Position X" width="32%">
+  <img src="/assets/img/position_y_kf.png" alt="Position Y" width="32%">
+  <img src="/assets/img/position_z_kf.png" alt="Position Z" width="32%">
+  <br>
+  <em class="figure-caption">Kalman filter smoothing of EE positions (X, Y, Z).</em>
+</p>
+
+<p align="center">
+  <img src="/assets/img/roll_kf.png" alt="Roll" width="32%">
+  <img src="/assets/img/pitch_kf.png" alt="Pitch" width="32%">
+  <img src="/assets/img/yaw_kf.png" alt="Yaw" width="32%">
+  <br>
+  <em class="figure-caption">Kalman filter smoothing of EE orientation (Roll, Pitch, Yaw).</em>
+</p>
+
 ---
 
 #### **6. Adaptive Motion Scaling Strategy**
@@ -289,6 +305,14 @@ The hand-to-EE mapping follows eleven adaptive stages:
 9. **Resistance Multiplier** – Apply adaptive damping based on motion intensity for stability.  
 10. **Combined Scaling** – Integrate all scaling effects into final per-axis motion commands.  
 11. **Position Smoothing** – Apply temporal smoothing for steady and continuous EE motion.
+
+<p align="center">
+  <img src="/assets/img/mapping_x.png" alt="Mapping X" width="32%">
+  <img src="/assets/img/mapping_y.png" alt="Mapping Y" width="32%">
+  <img src="/assets/img/mapping_z.png" alt="Mapping Z" width="32%">
+  <br>
+  <em class="figure-caption">Mapping human hand displacements to robot EE positions along the X, Y, and Z axes.</em>
+</p>
 
 **Outcome:**  
 The mapping achieves precise and adaptive control—stable near the ground, responsive mid-air, and safely bounded within the robot’s workspace.
