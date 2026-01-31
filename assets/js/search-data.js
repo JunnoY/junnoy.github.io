@@ -16,9 +16,9 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/projects/";
           },
-        },{id: "projects-robot-learning-for-crossing-a-red-line",
-          title: 'Robot Learning for Crossing a Red Line',
-          description: "Learn a policy (in `robot.py`) that crosses the red line efficiently under a limited training budget.",
+        },{id: "projects-robot-learning-for-navigation",
+          title: 'Robot learning for Navigation',
+          description: "",
           section: "Projects",handler: () => {
               window.location.href = "/projects/IC_robot_learning/";
             },},{id: "projects-real-time-vision-based-hand-tracking-for-robot-teleoperation-and-learning",
