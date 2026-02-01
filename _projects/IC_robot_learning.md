@@ -129,11 +129,7 @@ We also tested demos + BC: the robot requests a demonstration when stuck in a hi
 <heading>Training Phase</heading>
 
 <div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
-  <iframe class="embed-responsive-item"
-          src="https://drive.google.com/file/d/1IW1zrJyWPhf5ccjFB1qzRP9CYwav93_k/view?usp=sharing"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-  </iframe>
+  <iframe src="https://drive.google.com/file/d/1IW1zrJyWPhf5ccjFB1qzRP9CYwav93_k/preview" width="640" height="480"></iframe>
 </div>
 <em class="figure-caption">Training: the environment is divided into 8 regions, and the robot explores each region under a fixed budget allocation.</em>
 
@@ -144,30 +140,18 @@ We also tested demos + BC: the robot requests a demonstration when stuck in a hi
 <div class="best-approach">
   <span class="best-badge">Best Performance</span>
   <div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
-    <iframe class="embed-responsive-item"
-            src="https://drive.google.com/file/d/1XkH-TH6_WU-Xi-3QYVIjm8ibzhx-65zU/view?usp=sharing"
-            allow="autoplay; encrypted-media"
-            allowfullscreen>
-    </iframe>
+    <iframe src="https://drive.google.com/file/d/1XkH-TH6_WU-Xi-3QYVIjm8ibzhx-65zU/preview" width="640" height="480"></iframe>
   </div>
   <em class="figure-caption">Model-based RL with CEM planning (best overall).</em>
 </div>
 
 <div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
-  <iframe class="embed-responsive-item"
-          src="https://drive.google.com/file/d/1V_eb4azQ-bvdp1eNU0--GzozSP4trpbI/view?usp=sharing"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-  </iframe>
+  <iframe src="https://drive.google.com/file/d/1V_eb4azQ-bvdp1eNU0--GzozSP4trpbI/preview" width="640" height="480"></iframe>
 </div>
 <em class="figure-caption">Baseline: always move right with random vertical moves.</em>
 
 <div class="embed-responsive embed-responsive-16by9 mt-3 mb-3">
-  <iframe class="embed-responsive-item"
-          src="https://drive.google.com/file/d/1dlQIjJ8M315dxQX-ok3tORA1InrOgxo5/view?usp=sharing"
-          allow="autoplay; encrypted-media"
-          allowfullscreen>
-  </iframe>
+  <iframe src="https://drive.google.com/file/d/1dlQIjJ8M315dxQX-ok3tORA1InrOgxo5/preview" width="640" height="480"></iframe>
 </div>
 <em class="figure-caption">Behaviour cloning with limited demonstrations.</em>
 
