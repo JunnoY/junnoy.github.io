@@ -83,7 +83,7 @@ heading {
 This coursework compares **budget-aware robot learning methods** for a navigation task in a **static but stochastic environment**: the robot must **cross the red line** using as **few test-time steps** as possible, under a strict training budget.
 
 **Core constraints**
-- Training costs money: time ($0.03/s), step ($0.002), reset ($5), and demos ($5/request + $0.5/demo step). Total budget: **$100**.
+- Training costs money: time (\$0.03/s), step (\$0.002), reset (\$5), and demos (\$5/request + \$0.5/demo step). Total budget: **$100**.
 - The environment is **static within an episode** but changes **across episodes** (stochastic layouts).
 - The robot **does not observe resistance directly**, yet resistance strongly affects progress: a **longer low-resistance route** can beat a shorter high-resistance one.
 
