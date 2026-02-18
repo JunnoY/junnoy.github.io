@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Real-Time Vision-Based Hand Tracking for Robot Teleoperation and Learning
-img: assets/img/robot_teleoperate.png
+img: /assets/img/robot_teleoperation/robot_teleoperate.png
 importance: 3
 category: work
 related_publications: false
