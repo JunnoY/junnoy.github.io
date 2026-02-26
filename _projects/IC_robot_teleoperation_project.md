@@ -311,7 +311,7 @@ The hand-to-EE mapping follows eleven adaptive stages:
 <p align="center">
   <img src="/assets/img/robot_teleoperation/mapping_x.png" alt="Mapping X" width="32%">
   <img src="/assets/img/robot_teleoperation/mapping_y.png" alt="Mapping Y" width="32%">
-  <img src="/assets/imgrobot_teleoperation/mapping_z.png" alt="Mapping Z" width="32%">
+  <img src="/assets/img/robot_teleoperation/mapping_z.png" alt="Mapping Z" width="32%">
   <br>
   <em class="figure-caption">Mapping human hand displacements to robot EE positions along the X, Y, and Z axes.</em>
 </p>
