@@ -139,7 +139,7 @@ The overall workflow of the proposed **real-time robot teleoperation system** is
 3. **Robot Manipulation & Visualization** — Executes the mapped motions on the **physical robot arm**, runs simulations in **Gazebo**, and renders visual feedback using **Rerun**.
 
 <p align="center">
-  <img src="/assets/img/project_framework.png" alt="System Framework" width="80%">
+  <img src="/assets/img/robot_teleoperation/project_framework.png" alt="System Framework" width="80%">
   <br>
   <em class="figure-caption">Project Framework</em>
 </p>
@@ -153,7 +153,7 @@ The architecture consists of three main components:
 This design achieves an overall data transmission rate of 30 Hz, satisfying the requirements for real-time teleoperation.
 
 <p align="center">
-  <img src="/assets/img/multi_process_thread.png" alt="Multiprocessing and Multithreading Design" width="80%">
+  <img src="/assets/img/robot_teleoperation/multi_process_thread.png" alt="Multiprocessing and Multithreading Design" width="80%">
   <br>
   <em class="figure-caption">Multiprocessing and Multithreading in the system design</em>
 </p>
@@ -171,13 +171,13 @@ The figure below illustrates the hand tracking pipeline:
 6. **Visualisation** — The reconstructed hand mesh is rendered in the RGB frame, displaying additional metrics such as the **thumb–index fingertip distance** and **camera proximity**.
 
 <p align="center">
-  <img src="/assets/img/hamer_pipeline.png" alt="Hamer Pipeline" width="80%">
+  <img src="/assets/img/robot_teleoperation/hamer_pipeline.png" alt="Hamer Pipeline" width="80%">
   <br>
   <em class="figure-caption">Fig. 1: Hand Tracking Pipeline</em>
 </p>
 
 <p align="center">
-  <img src="/assets/img/hand_structure.png" alt="Hand Structure" width="30%">
+  <img src="/assets/img/robot_teleoperation/hand_structure.png" alt="Hand Structure" width="30%">
   <br>
   <em class="figure-caption">Fig. 2: Illustration of the MANO hand skeleton model, with labelled joints. This project uses joints 2, 4, 5, and 8.</em>
 </p>
@@ -265,17 +265,17 @@ To smooth noisy visual input and produce stable EE motion.
 Clean, temporally consistent trajectories suitable for real-time control.
 
 <p align="center">
-  <img src="/assets/img/position_x_kf.png" alt="Position X" width="32%">
-  <img src="/assets/img/position_y_kf.png" alt="Position Y" width="32%">
-  <img src="/assets/img/position_z_kf.png" alt="Position Z" width="32%">
+  <img src="/assets/img/robot_teleoperation/position_x_kf.png" alt="Position X" width="32%">
+  <img src="/assets/img/robot_teleoperation/position_y_kf.png" alt="Position Y" width="32%">
+  <img src="/assets/img/robot_teleoperation/position_z_kf.png" alt="Position Z" width="32%">
   <br>
   <em class="figure-caption">Kalman filter smoothing of EE positions (X, Y, Z).</em>
 </p>
 
 <p align="center">
-  <img src="/assets/img/roll_kf.png" alt="Roll" width="32%">
-  <img src="/assets/img/pitch_kf.png" alt="Pitch" width="32%">
-  <img src="/assets/img/yaw_kf.png" alt="Yaw" width="32%">
+  <img src="/assets/img/robot_teleoperation/roll_kf.png" alt="Roll" width="32%">
+  <img src="/assets/img/robot_teleoperation/pitch_kf.png" alt="Pitch" width="32%">
+  <img src="/assets/img/robot_teleoperation/yaw_kf.png" alt="Yaw" width="32%">
   <br>
   <em class="figure-caption">Kalman filter smoothing of EE orientation (Roll, Pitch, Yaw).</em>
 </p>
@@ -309,9 +309,9 @@ The hand-to-EE mapping follows eleven adaptive stages:
 11. **Position Smoothing** – Apply temporal smoothing for steady and continuous EE motion.
 
 <p align="center">
-  <img src="/assets/img/mapping_x.png" alt="Mapping X" width="32%">
-  <img src="/assets/img/mapping_y.png" alt="Mapping Y" width="32%">
-  <img src="/assets/img/mapping_z.png" alt="Mapping Z" width="32%">
+  <img src="/assets/img/robot_teleoperation/mapping_x.png" alt="Mapping X" width="32%">
+  <img src="/assets/img/robot_teleoperation/mapping_y.png" alt="Mapping Y" width="32%">
+  <img src="/assets/imgrobot_teleoperation/mapping_z.png" alt="Mapping Z" width="32%">
   <br>
   <em class="figure-caption">Mapping human hand displacements to robot EE positions along the X, Y, and Z axes.</em>
 </p>
